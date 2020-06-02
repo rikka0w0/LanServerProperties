@@ -1,0 +1,23 @@
+*.class
+*.iml
+*.ipr
+*.iws
+*.classpath
+*.project
+*.prefs
+*.launch
+/output
+
+#ForgeGradle
+/build
+/.gradle
+/eclipse/assets
+/libs
+/bin/
+/run/
+/out/
+
+\.idea/
+
+# Eclipse Run Configs
+*.launch
