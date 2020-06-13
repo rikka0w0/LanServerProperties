@@ -66,7 +66,6 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 		this.minecraft.getIntegratedServer().setOnlineMode(onlineMode);
 		this.minecraft.getIntegratedServer().getMaxPlayers();
 		this.minecraft.ingameGUI.getChatGUI().printChatMessage(itextcomponent);
-		this.minecraft.func_230150_b_();	
 	};
 	
 	@Override
@@ -120,7 +119,7 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 		this.tfwPort = new TextFieldWidget(this.font, this.width / 2 - 154, this.height - 54, 147, 20, I18n.format(portLangKey));
 		this.tfwPort.setText("25565");
 		// Check the format, make sure the text is a valid integer
-		this.tfwPort.setResponder((text)->this.tfwPort.setTextColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
+		this.tfwPort.func_212954_a((text)->this.tfwPort.setTextColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
 		this.children.add(tfwPort);
 	}
 	
