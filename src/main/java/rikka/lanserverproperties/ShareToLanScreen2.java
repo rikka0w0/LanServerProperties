@@ -105,14 +105,11 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 		// Add our own widgets
 		// Toggle button for onlineMode
 		this.onlineModeButton = 
-				new Button(this.width / 2 - 155, 124, 150, 20, I18n.format(ShareToLanScreen2.onlineModeLangKey),
-				(p_214315_1_) -> this.onlineMode = !this.onlineMode) {
-			@Override
-			public String getMessage() {
-				return I18n.format(ShareToLanScreen2.onlineModeLangKey) + ": "
-						+ I18n.format(ShareToLanScreen2.this.onlineMode ? "options.on" : "options.off");
-			}
-		};
+				new Button(this.width / 2 - 155, 124, 150, 20, getOnlineButtonText(),
+				(p_214315_1_) -> {
+					this.onlineMode = !this.onlineMode;
+					this.onlineModeButton.setMessage(this.getOnlineButtonText());
+				});
 		this.addButton(this.onlineModeButton);
 
 		// Text field for port
@@ -157,5 +154,10 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
         }
         
         return valid ? port : -1;
+	}
+	
+	private String getOnlineButtonText() {
+		return I18n.format(ShareToLanScreen2.onlineModeLangKey) + ": "
+				+ I18n.format(ShareToLanScreen2.this.onlineMode ? "options.on" : "options.off");
 	}
 }
