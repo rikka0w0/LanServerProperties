@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "lanserverproperties",
+    "name": "Lan Server Properties",
+    "description": "Enhance the vanilla \"Open to LAN\" Gui\n1. Allows listening port customization\nAllows the user to disable the online mode, so that unauthenticated players can join the game",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/rikka0w0/LanServerProperties/",
+    "updateUrl": "",
+    "authorList": [
+      "Rikka0_0"
+    ],
+    "credits": "the Chinese Institution of Scientific Minecraft Mod (CISM)",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
