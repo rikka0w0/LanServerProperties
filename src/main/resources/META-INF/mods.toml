@@ -34,6 +34,6 @@ Enhance the vanilla "Open to LAN" Gui which:
 [[dependencies.lanserverproperties]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15,)"
+    versionRange="[1.16,)"
     ordering="NONE"
     side="CLIENT"

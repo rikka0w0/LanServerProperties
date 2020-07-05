@@ -26,14 +26,18 @@ public class LanServerProperties {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, 
 				() -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true)
 				);
-		
+
 		// Register the GuiOpenEvent handler on client side only
 		// If the mod is accidentally installed on a dedicated server then do nothing
-		DistExecutor.runWhenOn(Dist.CLIENT, 
-				()->()->MinecraftForge.EVENT_BUS.addListener(ShareToLanScreen2.guiOpenEventHandler)
-		);
+		DistExecutor.safeRunWhenOn(Dist.CLIENT, ()->ClientHandler::registerGuiEventHandler);
 	}
 
+	public static class ClientHandler {
+		public static void registerGuiEventHandler() {
+			MinecraftForge.EVENT_BUS.addListener(ShareToLanScreen2::guiOpenEventHandler);
+		}
+	}
+	
 /*
 	@Mod.EventBusSubscriber(modid = LanServerProperties.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 	public static class ForgeEventHandler {

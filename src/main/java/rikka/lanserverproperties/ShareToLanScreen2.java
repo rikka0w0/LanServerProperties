@@ -2,7 +2,9 @@ package rikka.lanserverproperties;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.function.Consumer;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -12,6 +14,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.GameType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +27,9 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 	public final static String onlineModeLangKey = "lanserverproperties.gui.online_mode";
 	public final static String onlinemodeDescLangKey = "lanserverproperties.gui.online_mode_desc";
 	public final static String portLangKey = "lanserverproperties.gui.port";
-	public final static Consumer<GuiOpenEvent> guiOpenEventHandler = (e)-> {
+	public final static ImmutableList<ITextComponent> onlinemodeDescTooltip = ImmutableList.of(new TranslationTextComponent(onlinemodeDescLangKey));
+
+	public static void guiOpenEventHandler(GuiOpenEvent e) {
 		Screen guiToBeOpened = e.getGui();
 		if (guiToBeOpened instanceof ShareToLanScreen) {
 /*
@@ -49,7 +54,8 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 	}
 	
 	Button.IPressable startServerButtonPressed = (button) -> {
-		this.minecraft.displayGuiScreen((Screen) null);
+		Minecraft mc = this.field_230706_i_;
+		mc.displayGuiScreen((Screen) null);
 
 		String portStr = tfwPort.getText();
 		int port = portStr.length() > 0 ? Integer.parseInt(portStr) : 25565;
@@ -57,27 +63,27 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 		boolean allowCheats = ObfuscationReflectionHelper.getPrivateValue(ShareToLanScreen.class, ShareToLanScreen2.this, "field_146600_i");
 
 		ITextComponent itextcomponent;
-		if (this.minecraft.getIntegratedServer().shareToLAN(GameType.getByName(gameMode), allowCheats, port)) {
+		if (mc.getIntegratedServer().shareToLAN(GameType.getByName(gameMode), allowCheats, port)) {
+			mc.getIntegratedServer().setOnlineMode(onlineMode);
+			mc.getIntegratedServer().getMaxPlayers();
 			itextcomponent = new TranslationTextComponent("commands.publish.started", port);
 		} else {
 			itextcomponent = new TranslationTextComponent("commands.publish.failed");
 		}
-		
-		this.minecraft.getIntegratedServer().setOnlineMode(onlineMode);
-		this.minecraft.getIntegratedServer().getMaxPlayers();
-		this.minecraft.ingameGUI.getChatGUI().printChatMessage(itextcomponent);
-		this.minecraft.func_230150_b_();	
+
+		mc.ingameGUI.getChatGUI().printChatMessage(itextcomponent);
+		mc.func_230150_b_(); // Update window title
 	};
-	
+
 	@Override
-	protected void init() {
-		super.init();
+	protected void func_231160_c_() {
+		super.func_231160_c_();
 
 		// Attempt to locate the old button
 		Button button = null;
 		String msg = I18n.format("lanServer.start");
-		for (Widget widget: this.buttons) {
-			if (widget instanceof Button && widget.getMessage().equals(msg)) {
+		for (Widget widget: this.field_230710_m_) {
+			if (widget instanceof Button && widget.func_230458_i_().getString().equals(msg)) {
 				button = (Button) widget;
 				break;
 			}
@@ -90,7 +96,7 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 			return;
 		}
 
-		Field fieldOnPress = ObfuscationReflectionHelper.findField(Button.class, "onPress");
+		Field fieldOnPress = ObfuscationReflectionHelper.findField(Button.class, "field_230697_t_");
 		Field modifiersField;
 		try {
 			modifiersField = Field.class.getDeclaredField("modifiers");
@@ -106,38 +112,37 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
 		// Add our own widgets
 		// Toggle button for onlineMode
 		this.onlineModeButton = 
-				new Button(this.width / 2 - 155, 124, 150, 20, I18n.format(ShareToLanScreen2.onlineModeLangKey),
+				new Button(this.field_230708_k_ / 2 - 155, 124, 150, 20, this.getOnlineButtonText(),
 				(p_214315_1_) -> this.onlineMode = !this.onlineMode) {
 			@Override
-			public String getMessage() {
-				return I18n.format(ShareToLanScreen2.onlineModeLangKey) + ": "
-						+ I18n.format(ShareToLanScreen2.this.onlineMode ? "options.on" : "options.off");
+			public ITextComponent func_230458_i_() {
+				return ShareToLanScreen2.this.getOnlineButtonText();
 			}
 		};
-		this.addButton(this.onlineModeButton);
+		this.func_230480_a_(this.onlineModeButton);
 
 		// Text field for port
-		this.tfwPort = new TextFieldWidget(this.font, this.width / 2 - 154, this.height - 54, 147, 20, I18n.format(portLangKey));
+		this.tfwPort = new TextFieldWidget(this.field_230712_o_, this.field_230708_k_ / 2 - 154, this.field_230709_l_ - 54, 147, 20, new TranslationTextComponent(portLangKey));
 		this.tfwPort.setText("25565");
 		// Check the format, make sure the text is a valid integer
 		this.tfwPort.setResponder((text)->this.tfwPort.setTextColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
-		this.children.add(tfwPort);
+		this.field_230705_e_.add(tfwPort);
 	}
-	
+
 	@Override
-	public void tick() {
+	public void func_231023_e_() {
 		this.tfwPort.tick();
 	}
 	
 	@Override
-	public void render(int mouseX, int mouseY, float partialTicks) {
-		super.render(mouseX, mouseY, partialTicks);
+	public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 
-		this.drawString(this.font, I18n.format(portLangKey), this.width / 2 - 154, this.height - 66, 10526880);
-		this.tfwPort.render(mouseX, mouseY, partialTicks);
+		this.func_238471_a_(matrixStack, this.field_230712_o_, this.tfwPort.func_230458_i_().getString(), this.field_230708_k_ / 2 - 135, this.field_230709_l_ - 66, 10526880);
+		this.tfwPort.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 
-		if (this.onlineModeButton.isHovered())
-			this.renderTooltip(I18n.format(onlinemodeDescLangKey), mouseX, mouseY);
+		if (this.onlineModeButton.func_230449_g_()) // ????
+			this.func_238654_b_(matrixStack, onlinemodeDescTooltip, mouseX, mouseY);
 	}
 	
 	/**
@@ -158,5 +163,10 @@ public class ShareToLanScreen2 extends ShareToLanScreen {
         }
         
         return valid ? port : -1;
+	}
+
+	private ITextComponent getOnlineButtonText() {
+		return new StringTextComponent(I18n.format(ShareToLanScreen2.onlineModeLangKey) + ": "
+				+ I18n.format(ShareToLanScreen2.this.onlineMode ? "options.on" : "options.off"));
 	}
 }
