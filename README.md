@@ -1,7 +1,9 @@
-# Lan Server Properties
-For Minecraft 1.16 and above, Forge version >= 28
+# LAN Server Properties
+For Minecraft 1.12–1.16, and Forge.
 
-When this mod is installed, it will add a few new things to the "Open to LAN" Gui, which then allows the user to start the LAN game on a specific port, and also provides an option to disable the "online mode". Disabling the "online mode" allows unauthenticated players to join the game.
+When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
+* Allows for a port customization
+* Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.
 
 ## For developers
-To modify and debug the code, first import the repo as a gradle project in Eclipse IDE, then run the ForgeGradle task `genEclipseRuns`.
+To modify and debug the code, first import the repo as a Gradle project in Eclipse IDE, and then run the ForgeGradle task `genEclipseRuns`.
