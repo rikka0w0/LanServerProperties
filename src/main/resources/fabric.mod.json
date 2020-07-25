@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "lanserverproperties",
+  "version": "${version}",
+
+  "name": "Lan Server Properties",
+  "description": "Enhance the vanilla \"Open to LAN\" Gui which: 1. Allows listening port customization. 2. Allows the user to disable the online mode, so that unauthenticated players can join the game.",
+  "authors": [
+    "Rikka0w0"
+  ],
+  "contact": {
+    "homepage": "https://github.com/rikka0w0/LanServerProperties/",
+    "sources": "https://github.com/rikka0w0/LanServerProperties/"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "mixins": [
+    "lsp.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
