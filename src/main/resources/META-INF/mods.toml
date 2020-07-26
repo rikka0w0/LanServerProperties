@@ -13,9 +13,9 @@ credits="the Chinese Institution of Scientific Minecraft Mod (CISM)"
 authors="Rikka0w0"
 
 description='''
-Enhance the vanilla "Open to LAN" Gui which:
-1. Allows listening port customization
-2. Allows the user to disable the online mode, so that unauthenticated players can join the game.
+Enhances the vanilla Minecraft "Open to LAN" screen, which now also:
+1. Allows for a port customization
+2. Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.
 '''
 
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.

@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Lan Server Properties",
-  "description": "Enhance the vanilla \"Open to LAN\" Gui which: 1. Allows listening port customization. 2. Allows the user to disable the online mode, so that unauthenticated players can join the game.",
+  "description": "Enhances the vanilla Minecraft \"Open to LAN\" screen, which now also:\n1. Allows for a port customization\n2. Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.",
   "authors": [
     "Rikka0w0"
   ],
