@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
-import net.minecraft.client.gui.screen.TickableElement;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -20,14 +20,17 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import rikka.lanserverproperties.fabric.ILSPScreen;
 
 @Mixin(OpenToLanScreen.class)
-public abstract class MixinOpenToLanScreen implements TickableElement {
+public abstract class MixinOpenToLanScreen extends Screen {
 	private final static String onlineModeLangKey = "lanserverproperties.gui.online_mode";
 	private final static String onlinemodeDescLangKey = "lanserverproperties.gui.online_mode_desc";
 	private final static String portLangKey = "lanserverproperties.gui.port";
 	private final static ImmutableList<Text> onlinemodeDescTooltip = ImmutableList.of(new TranslatableText(onlinemodeDescLangKey));
+
+	protected MixinOpenToLanScreen(Text title) {
+		super(title);
+	}
 
 	@Unique
 	private TextFieldWidget tfwPort = null;
@@ -41,7 +44,7 @@ public abstract class MixinOpenToLanScreen implements TickableElement {
 		String portStr = tfwPort.getText();
 		return portStr.length() > 0 ? Integer.parseInt(portStr) : 25565;
 	}
-	
+
 	@Inject(method = "method_19851", at = @At(value = "NEW", ordinal = 0, shift = Shift.BEFORE, target = "net/minecraft/text/TranslatableText"))
 	private void onLanServerStarted(CallbackInfo ci) {
 		MinecraftClient.getInstance().getServer().setOnlineMode(onlineMode);
@@ -61,14 +64,14 @@ public abstract class MixinOpenToLanScreen implements TickableElement {
 				return getOnlineButtonText();
 			}
 		};
-		((ILSPScreen) this).LSP$addButton(this.onlineModeButton);
+		this.addButton(this.onlineModeButton);
 
 		// Text field for port
-		this.tfwPort = new TextFieldWidget(((ILSPScreen) this).LSP$getTextRenderer(), me.width / 2 - 154, me.height - 54, 147, 20, new TranslatableText(portLangKey));
+		this.tfwPort = new TextFieldWidget(this.textRenderer, me.width / 2 - 154, me.height - 54, 147, 20, new TranslatableText(portLangKey));
 		this.tfwPort.setText("25565");
 		// Check the format, make sure the text is a valid integer
 		this.tfwPort.setChangedListener((text)->this.tfwPort.setEditableColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
-		((ILSPScreen) this).LSP$addChild(tfwPort);
+		this.addChild(tfwPort);
 	}
 
 	@Override
@@ -80,7 +83,7 @@ public abstract class MixinOpenToLanScreen implements TickableElement {
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		OpenToLanScreen me = (OpenToLanScreen) (Object) this;
 
-		me.drawTextWithShadow(matrixStack, ((ILSPScreen) this).LSP$getTextRenderer(), this.tfwPort.getMessage(), me.width / 2 - 135, me.height - 66, 10526880);
+		this.drawTextWithShadow(matrixStack, this.textRenderer, this.tfwPort.getMessage(), this.width / 2 - 155, this.height - 66, 10526880);
 		this.tfwPort.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		if (this.onlineModeButton.isMouseOver(mouseX, mouseY)) // ????
@@ -95,17 +98,17 @@ public abstract class MixinOpenToLanScreen implements TickableElement {
 	private static int validatePort(String text) {
 		boolean valid = true;
 		int port = -1;
-        try {
-        	if (text.length() > 0) {
-        		port = Integer.parseInt(text);
-        		if (port < 0 || port > 65535)
-        			valid = false;
-        	}
-        } catch (NumberFormatException e) {
-        	valid = false;
-        }
-        
-        return valid ? port : -1;
+		try {
+			if (text.length() > 0) {
+				port = Integer.parseInt(text);
+				if (port < 0 || port > 65535)
+					valid = false;
+			}
+		} catch (NumberFormatException e) {
+			valid = false;
+		}
+
+		return valid ? port : -1;
 	}
 
 	@Unique

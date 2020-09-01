@@ -6,8 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "MixinOpenToLanScreen",
-    "MixinScreen"
+    "MixinOpenToLanScreen"
   ],
   "injectors": {
     "defaultRequire": 1
