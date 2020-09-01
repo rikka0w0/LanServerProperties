@@ -83,7 +83,7 @@ public abstract class MixinOpenToLanScreen extends Screen {
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		OpenToLanScreen me = (OpenToLanScreen) (Object) this;
 
-		this.drawTextWithShadow(matrixStack, this.textRenderer, this.tfwPort.getMessage(), this.width / 2 - 155, this.height - 66, 10526880);
+		Screen.drawTextWithShadow(matrixStack, this.textRenderer, this.tfwPort.getMessage(), this.width / 2 - 155, this.height - 66, 10526880);
 		this.tfwPort.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		if (this.onlineModeButton.isMouseOver(mouseX, mouseY)) // ????
