@@ -24,3 +24,5 @@ build
 
 # Yarn-forge
 remapped
+/mappings
+/forge/src

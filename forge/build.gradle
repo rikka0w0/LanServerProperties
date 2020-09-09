@@ -33,7 +33,7 @@ dependencies {
 	minecraft 'net.minecraftforge:forge:1.16.2-33.0.42'
 }
 
-version = "1.0"
+version = "1.3"
 group= "rikka.lanserverproperties" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "lanserverproperties"
 
@@ -74,9 +74,11 @@ sourceSets {
     main {
         java {
             srcDir "src/main/java"
+            srcDir "../src/forge/java"
         }
         resources {
-            srcDir "src/main/resources"
+            srcDir "../src/main/resources"
+            srcDir "../src/forge/resources"
         }
     }
 }
@@ -95,4 +97,14 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+}
+
+task packMapping(type: Jar) {
+  archiveName = 'obf2mcp.jar'
+
+  rename { String filename ->
+        return 'mappings/mappings.tiny'
+  }
+  from file("remapped/obf2mcp.tiny")
+  destinationDir = file("../mappings")
 }
