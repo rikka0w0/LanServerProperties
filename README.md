@@ -37,6 +37,7 @@ git submodule update --init
 # Create vanilla-to-MCP tinyV2 mapping for Fabric Loom
 pushd forge
 # This will fail with `java.nio.file.NoSuchFileException`, it is normal.
+# The mappings and mc-version should match gradle.properties.
 ../gradlew userRemapYarn --mappings net.fabricmc:yarn:1.16.2+build.47 --mc-version 1.16.2 --no-daemon --stacktrace --debug
 ../gradlew packMapping
 popd
