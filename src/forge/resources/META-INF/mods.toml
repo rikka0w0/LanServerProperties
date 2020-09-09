@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[28,)"
 issueTrackerURL="https://github.com/rikka0w0/LanServerProperties/issues" #optional
-license="All Rights Reserved"
+license="MIT License"
 
 [[mods]] #mandatory
 modId="lanserverproperties"
@@ -9,7 +9,7 @@ version="${file.jarVersion}"
 displayName="Lan Server Properties"
 # updateJSONURL="http://myurl.me/" #optional
 displayURL="https://github.com/rikka0w0/LanServerProperties/" #optional
-logoFile="logo.png" #optional
+logoFile="lsp_logo.png" #optional
 credits="the Chinese Institution of Scientific Minecraft Mod (CISM)"
 authors="Rikka0w0"
 
