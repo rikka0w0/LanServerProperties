@@ -13,9 +13,9 @@ build
 .gradle
 /eclipse/assets
 /libs
-/bin/
-/run/
-/out/
+bin/
+run/
+out/
 
 \.idea/
 

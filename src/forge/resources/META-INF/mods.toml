@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[28,)"
 issueTrackerURL="https://github.com/rikka0w0/LanServerProperties/issues" #optional
+license="All Rights Reserved"
 
 [[mods]] #mandatory
 modId="lanserverproperties"
