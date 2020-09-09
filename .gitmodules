@@ -1,0 +1,3 @@
+[submodule "yarnforge-plugin"]
+	path = yarnforge-plugin
+	url = git@github.com:rikka0w0/yarnforge-plugin.git

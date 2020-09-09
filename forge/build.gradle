@@ -9,20 +9,28 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        maven {
+            url = "https://oss.sonatype.org/content/groups/public/"
+        }
+        maven {
+            url = "https://maven.fabricmc.net/"
+        }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'me.ramidzkh', name: 'yarnforge-plugin', version: '1.3.0-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
+apply plugin: 'yarnforge-plugin'
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.1-32.0.47'
+	minecraft 'net.minecraftforge:forge:1.16.2-33.0.42'
 }
 
 version = "1.0"

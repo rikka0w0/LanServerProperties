@@ -9,8 +9,8 @@
 /output
 
 #ForgeGradle
-/build
-/.gradle
+build
+.gradle
 /eclipse/assets
 /libs
 /bin/
@@ -21,3 +21,6 @@
 
 # Eclipse Run Configs
 *.launch
+
+# Yarn-forge
+remapped
