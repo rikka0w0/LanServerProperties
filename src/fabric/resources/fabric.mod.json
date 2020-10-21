@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "lanserverproperties",
-  "version": "${version}",
+  "version": "1.4.0",
 
   "name": "Lan Server Properties",
   "description": "Enhances the vanilla Minecraft \"Open to LAN\" screen, which now also:\n1. Allows for a port customization\n2. Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.",
