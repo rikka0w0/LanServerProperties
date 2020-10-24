@@ -1,5 +1,5 @@
 # LAN Server Properties
-For Minecraft 1.12–1.16, Forge and Fabric.
+For Minecraft 1.12.2–1.16.3, Forge and Fabric.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization
@@ -21,16 +21,19 @@ If the forge part cannot be imported into Eclipse, please copy `gradlew`, `gradl
 
 Windows users need to replace `./` and `../` with `.\` and `..\` respectively.
 
+Since 1.16.2, LSP for Fabric and Forge share common code as much as possible. The common and Fabric-specific code are written in yarn mapping.
+A customized yarnforge-plugin maps the common code to MCP mapping. Forge-specific code uses MCP mapping only, combining with the remapped common code gives the artifact for Forge.
+
 ### Compile Fabric artifact
 ```
-git clone git@github.com:rikka0w0/yarnforge-plugin.git
+git clone https://github.com/rikka0w0/LanServerProperties.git
 cd LanServerProperties
 ./gradlew build
 ```
 
 ### Compile Forge artifact
 ```
-git clone git@github.com:rikka0w0/yarnforge-plugin.git
+git clone https://github.com/rikka0w0/LanServerProperties.git
 cd LanServerProperties
 git submodule update --init
 
@@ -38,7 +41,7 @@ git submodule update --init
 pushd forge
 # This will fail with `java.nio.file.NoSuchFileException`, it is normal.
 # The mappings and mc-version should match gradle.properties.
-../gradlew userRemapYarn --mappings net.fabricmc:yarn:1.16.2+build.47 --mc-version 1.16.2 --no-daemon --stacktrace --debug
+../gradlew userRemapYarn --mappings net.fabricmc:yarn:1.16.3+build.47 --mc-version 1.16.3 --no-daemon --stacktrace --debug
 ../gradlew packMapping
 popd
 

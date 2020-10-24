@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "lanserverproperties",
-  "version": "1.4.0",
+  "version": "1.4.1",
 
   "name": "Lan Server Properties",
   "description": "Enhances the vanilla Minecraft \"Open to LAN\" screen, which now also:\n1. Allows for a port customization\n2. Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.",
@@ -9,7 +9,7 @@
     "Rikka0w0"
   ],
   "contact": {
-    "homepage": "https://github.com/rikka0w0/LanServerProperties/",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/lan-server-properties/",
     "sources": "https://github.com/rikka0w0/LanServerProperties/"
   },
 
