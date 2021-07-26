@@ -1,9 +1,10 @@
 package rikka.lanserverproperties;
 
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.text.LiteralText;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * Represents an invisible widget group. By adding widgets to widget group,
@@ -11,7 +12,7 @@ import net.minecraft.text.LiteralText;
  * For a given Screen object, each widget group should have only 1 instance.
  * Widget groups are identified by their class types.
  */
-public abstract class InvisibleWidgetGroup extends AbstractButtonWidget {
+public abstract class InvisibleWidgetGroup extends AbstractWidget {
 	public final String name;
 
 	public InvisibleWidgetGroup() {
@@ -19,7 +20,7 @@ public abstract class InvisibleWidgetGroup extends AbstractButtonWidget {
 	}
 
 	public InvisibleWidgetGroup(String name) {
-		super(0, 0, 0, 0, new LiteralText(name));
+		super(0, 0, 0, 0, new TextComponent(name));
 		this.name = name;
 		this.active = false;
 		this.visible = false;
@@ -27,12 +28,20 @@ public abstract class InvisibleWidgetGroup extends AbstractButtonWidget {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends InvisibleWidgetGroup> T fromScreen(Screen screen, Class<T> groupCls) {
-		for (Element element: screen.children()) {
+		if (screen == null)
+			return null;
+
+		for (GuiEventListener element: screen.children()) {
 			if (element.getClass().equals(groupCls)) {
 				return (T) element;
 			}
 		}
 
 		return null;
+	}
+
+	@Override
+	public void updateNarration(NarrationElementOutput p_169152_) {
+
 	}
 }

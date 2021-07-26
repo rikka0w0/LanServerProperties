@@ -1,5 +1,5 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.16.3, Forge and Fabric.
+For Minecraft 1.12.2–1.7.1, Forge and Fabric.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization
@@ -21,36 +21,23 @@ If the forge part cannot be imported into Eclipse, please copy `gradlew`, `gradl
 
 Windows users need to replace `./` and `../` with `.\` and `..\` respectively.
 
-Since 1.16.2, LSP for Fabric and Forge share common code as much as possible. The common and Fabric-specific code are written in yarn mapping.
-A customized yarnforge-plugin maps the common code to MCP mapping. Forge-specific code uses MCP mapping only, combining with the remapped common code gives the artifact for Forge.
+Since 1.17.1, LSP for Fabric and Forge share common code as much as possible. The entire code base uses Minecraft official mapping.
 
 ### Compile Fabric artifact
 ```
 git clone https://github.com/rikka0w0/LanServerProperties.git
-cd LanServerProperties
+cd LanServerProperties/fabric
 ./gradlew build
 ```
 
 ### Compile Forge artifact
 ```
 git clone https://github.com/rikka0w0/LanServerProperties.git
-cd LanServerProperties
-git submodule update --init
+cd LanServerProperties/forge
+./gradlew build
+```
 
-# Create vanilla-to-MCP tinyV2 mapping for Fabric Loom
-pushd forge
-# This will fail with `java.nio.file.NoSuchFileException`, it is normal.
-# The mappings and mc-version should match gradle.properties.
-../gradlew userRemapYarn --mappings net.fabricmc:yarn:1.16.3+build.47 --mc-version 1.16.3 --no-daemon --stacktrace --debug
-../gradlew packMapping
-popd
-
-# Fabric Loom migrateMappings
-./gradlew migrateMappings --mappings rikka:obf2mcp --input src/main/java --output forge/src/main/java
-# Mapping to MCP is done
-
-# Forge gradle build
-pushd forge
-../gradlew build
-popd
+### To specify JRE path (Since 1.17.1, Minecraft requires Java 16 or above):
+```
+./gradlew -Dorg.gradle.java.home=/path_to_jdk_directory <commands>
 ```

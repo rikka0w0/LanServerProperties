@@ -1,0 +1,85 @@
+plugins {
+	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'maven-publish'
+}
+
+dependencies {
+	//to change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings minecraft.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+}
+
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.dev_group
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+// configure  the source folders
+sourceSets {
+    main {
+        java {
+            srcDir "../src/main/java"
+        }
+        resources {
+            srcDir "../src/main/resources"
+            exclude '.cache'
+            exclude 'Thumbs.db'
+        }
+    }
+}
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+
+	// Minecraft 1.17 (21w19a) upwards uses Java 16.
+	it.options.release = 16
+}
+
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
+}
+
+jar {
+	from "LICENSE"
+}
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import net.fabricmc.loom.LoomGradleExtension;
+tasks.register("yarn-mc-jar") {
+  description = 'Display the path of the yarn-mapped vanilla Minecraft'
+
+  doLast {
+    LoomGradleExtension loom = getProject().getExtensions().getByType(LoomGradleExtension.class);
+    Path compiledJar = loom.getMappingsProvider().mappedProvider.getMappedJar().toPath();
+    println 'The yarn Minecraft jar is located at:'
+    println compiledJar
+
+    Dependency dependency = project.getDependencies().create(project.dev_group+":obf2mcp");
+	  Set<File> files = project.getConfigurations().detachedConfiguration(dependency).resolve();
+	  File file = com.google.common.collect.Iterables.getOnlyElement(files);
+	  println file.toPath()
+  }
+}

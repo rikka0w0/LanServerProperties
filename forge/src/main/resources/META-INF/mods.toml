@@ -1,0 +1,40 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+issueTrackerURL="https://github.com/rikka0w0/LanServerProperties/issues" #optional
+license="MIT License"
+
+[[mods]] #mandatory
+modId="lanserverproperties"
+version="${file.jarVersion}"
+displayName="Lan Server Properties"
+# updateJSONURL="http://myurl.me/" #optional
+displayURL="https://github.com/rikka0w0/LanServerProperties/" #optional
+logoFile="lsp_logo.png" #optional
+credits="the Chinese Institution of Scientific Minecraft Mod (CISM)"
+authors="Rikka0w0"
+
+description='''
+Enhances the vanilla Minecraft "Open to LAN" screen, which now also:
+1. Allows for a port customization
+2. Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.
+'''
+
+# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
+[[dependencies.lanserverproperties]] #optional
+    # the modid of the dependency
+    modId="forge" #mandatory
+    # Does this dependency have to exist - if not, ordering below must be specified
+    mandatory=true #mandatory
+    # The version range of the dependency
+    versionRange="[37.0.5,)" #mandatory
+    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+    ordering="NONE"
+    # Side this dependency is applied on - BOTH, CLIENT or SERVER
+    side="CLIENT"
+# Here's another dependency
+[[dependencies.lanserverproperties]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,)"
+    ordering="NONE"
+    side="CLIENT"

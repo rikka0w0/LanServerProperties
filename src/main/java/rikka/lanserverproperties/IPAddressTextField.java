@@ -1,22 +1,22 @@
 package rikka.lanserverproperties;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
-public class IPAddressTextField extends TextFieldWidget {
+public class IPAddressTextField extends EditBox {
 	private final int defaultPort;
 
-	public IPAddressTextField(TextRenderer textRenderer, int x, int y, int width, int height, Text name, int defaultPort) {
+	public IPAddressTextField(Font textRenderer, int x, int y, int width, int height, Component name, int defaultPort) {
 		super(textRenderer, x, y, width, height, name);
 		this.defaultPort = defaultPort;
-		this.setText(String.valueOf(defaultPort));
+		this.setValue(String.valueOf(defaultPort));
 		// Check the format, make sure the text is a valid integer
-		this.setChangedListener((text) -> this.setEditableColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
+		this.setResponder((text) -> this.setTextColor(validatePort(text) >= 0 ? 0xFFFFFF : 0xFF0000));
 	}
 
 	public int getServerPort() {
-		String portStr = getText();
+		String portStr = getValue();
 		return portStr.length() > 0 ? Integer.parseInt(portStr) : defaultPort;
 	}
 

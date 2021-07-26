@@ -2,22 +2,22 @@ package rikka.lanserverproperties;
 
 import java.util.function.Function;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
-public class ToggleButton extends ButtonWidget {
-	private final Function<Boolean, Text> textMapper;
+public class ToggleButton extends Button {
+	private final Function<Boolean, Component> textMapper;
 	private boolean state;
 
 	public ToggleButton(int x, int y, int width, int height,
-			Function<Boolean, Text> textMapper, boolean defaultState,
-			TooltipSupplier tooltipSupplier) {
+			Function<Boolean, Component> textMapper, boolean defaultState,
+			Button.OnTooltip tooltipSupplier) {
 		this(x, y, width, height, textMapper, defaultState, (button) -> {}, tooltipSupplier);
 	}
 
 	public ToggleButton(int x, int y, int width, int height,
-			Function<Boolean, Text> textMapper, boolean defaultState,
-			PressAction onCheck, TooltipSupplier tooltipSupplier) {
+			Function<Boolean, Component> textMapper, boolean defaultState,
+			Button.OnPress onCheck, Button.OnTooltip tooltipSupplier) {
 		super(x, y, width, height, textMapper.apply(defaultState), onCheck, tooltipSupplier);
 		this.textMapper = textMapper;
 		this.state = defaultState;
@@ -44,7 +44,7 @@ public class ToggleButton extends ButtonWidget {
 	}
 
 	@Override
-	public Text getMessage() {
+	public Component getMessage() {
 		return textMapper.apply(this.state);
 	}
 }
