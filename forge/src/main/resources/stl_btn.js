@@ -6,37 +6,19 @@ function initializeCoreMod() {
 	OpenToLanScreenEx = "rikka/lanserverproperties/OpenToLanScreenEx";
 	getAvailablePort_owner = "net/minecraft/util/HttpUtil";
 	getAvailablePort_name = ASMAPI.mapMethod("m_13939_");
+	getAvailablePort_desc = "()I";
 
 	return {
-			"ShareToLan Button Transformer Dev": {
+			"ShareToLanScreen.lambda$init$2": {
 				"target": {
 					"type": "METHOD",
 					"class": "net.minecraft.client.gui.screens.ShareToLanScreen",
-					"methodName": "lambda$init$2",
+					"methodName": "m_96659_",
 					"methodDesc": "(Lnet/minecraft/client/gui/components/Button;)V"
 				},
-				"transformer": patchLambda_ShareToLanScreen_dev
-			},
-			"ShareToLan Button Transformer Reobf": {
-				"target": {
-					"type": "METHOD",
-					"class": "net.minecraft.client.gui.screens.ShareToLanScreen",
-					"methodName": "m_99659_",
-					"methodDesc": "(Lnet/minecraft/client/gui/components/Button;)V"
-				},
-				"transformer": patchLambda_ShareToLanScreen_reobf
+				"transformer": patchLambda_ShareToLanScreen
 			}
 	}
-}
-
-function patchLambda_ShareToLanScreen_dev(methodNode) {
-	print("[LSP CoreMod] Access Transformer starts in Dev mode");
-	return patchLambda_ShareToLanScreen(methodNode);
-}
-
-function patchLambda_ShareToLanScreen_reobf(methodNode) {
-	print("[LSP CoreMod] Access Transformer starts in Reobf mode");
-	return patchLambda_ShareToLanScreen(methodNode);
 }
 
 function patchLambda_ShareToLanScreen(methodNode) {
@@ -44,13 +26,14 @@ function patchLambda_ShareToLanScreen(methodNode) {
 	ASMAPI.appendMethodCall(methodNode, ASMAPI.buildMethodCall(OpenToLanScreenEx, "onOpenToLanClicked", "()V", ASMAPI.MethodType.STATIC));
 					
 	// Redirect
-	var getAvailablePort_Call = ASMAPI.findFirstMethodCall(methodNode, ASMAPI.MethodType.STATIC, getAvailablePort_owner, getAvailablePort_name, "()I");
+	var getAvailablePort_Call = ASMAPI.findFirstMethodCall(methodNode, ASMAPI.MethodType.STATIC, getAvailablePort_owner, getAvailablePort_name, getAvailablePort_desc);
+	var getAvailablePort_Str = getAvailablePort_owner + "." + getAvailablePort_name + getAvailablePort_desc;
 	if (getAvailablePort_Call == null) {
-		print("[LSP CoreMod] Unable to find injection point \"invokestatic net/minecraft/util/HttpUtil.m_13939_()I\"");
+		print("[LSP CoreMod] Unable to find injection point \"" + getAvailablePort_Str + "\"");
 	} else {
 		getAvailablePort_Call.owner = OpenToLanScreenEx;
 		getAvailablePort_Call.name = "getServerPort";
-		print("[LSP CoreMod] Found injection point \"invokestatic net/minecraft/util/HttpUtil.m_13939_()I\"");
+		print("[LSP CoreMod] Redirect \"" + getAvailablePort_Str + "\" to " + OpenToLanScreenEx + ".getServerPort()I");
 	}
 
 	// At the end of the function
@@ -61,10 +44,9 @@ function patchLambda_ShareToLanScreen(methodNode) {
 		if (instruction.getType() == AbstractInsnNode.INSN && instruction.opcode == Opcodes.RETURN) {
 			methodNode.instructions.insertBefore(instruction, retCall);
 			retCount++;
-			print("[LSP CoreMod] Found injection point at instruction RETURN");
 		}
 	}
-	print("[LSP CoreMod] Found " + retCount + " RETURN");
+	print("[LSP CoreMod] Found " + retCount + " RETURN instruction(s)");
 
 	return methodNode;
 }
