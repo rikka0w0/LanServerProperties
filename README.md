@@ -11,7 +11,8 @@ When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" scre
 ##Dependencies
 ### Forge Version
 You need to install Forge and then install this mod.
-### 
+
+### Fabric Version
 You need to install Fabric Loader and then install this mod. Fabric API is optional.
 
 ## For developers
