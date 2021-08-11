@@ -3,7 +3,9 @@ package rikka.lanserverproperties.mixin;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,13 +20,22 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.network.chat.Component;
-
+import net.minecraft.world.level.GameType;
+import rikka.lanserverproperties.IShareToLanScreenParamAccessor;
 import rikka.lanserverproperties.OpenToLanScreenEx;
 
 @Mixin(ShareToLanScreen.class)
-public abstract class MixinOpenToLanScreen extends Screen {
+public abstract class MixinOpenToLanScreen extends Screen implements IShareToLanScreenParamAccessor {
 	private final static String lambda$init$2 = "method_19851"; // Use lambda$init$2 in dev env
 	private final static String HttpUtil_getAvailablePort = "net/minecraft/util/HttpUtil.getAvailablePort()I";
+
+	@Shadow
+	@Final
+	private Screen lastScreen;
+	@Shadow
+	private GameType gameMode;
+	@Shadow
+	private boolean commands;
 
 	@SuppressWarnings("unchecked")
 	@Unique
@@ -71,13 +82,42 @@ public abstract class MixinOpenToLanScreen extends Screen {
 		OpenToLanScreenEx.onOpenToLanClosed();
 	}
 
-	@Inject(method = "init", at = @At("TAIL"))
+	@Inject(method = "init", at = @At("HEAD"))
 	protected void init_head(CallbackInfo ci) {
-		OpenToLanScreenEx.init(this, this.font, this.children(), add);
+		OpenToLanScreenEx.preInitShareToLanScreen(this, this);
+	}
+
+	@Inject(method = "init", at = @At("TAIL"))
+	protected void init_tail(CallbackInfo ci) {
+		OpenToLanScreenEx.postInitShareToLanScreen(this, this.font, this.children(), add, this::removeWidget, this);
 	}
 
 	@Inject(method = "render", at = @At("TAIL"))
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		OpenToLanScreenEx.postDraw(this, this.font, matrixStack, mouseX, mouseY, partialTicks);
+	}
+
+	///////////////////////////////////////////////////////////////////
+	/// IShareToLanScreenParamAccessor
+	///////////////////////////////////////////////////////////////////
+	@Override
+	public Screen getLastScreen() {
+		return this.lastScreen;
+	}
+
+	@Override
+	public GameType getGameType() {
+		return this.gameMode;
+	}
+
+	@Override
+	public boolean isCommandEnabled() {
+		return this.commands;
+	}
+
+	@Override
+	public void setDefault(GameType gameType, boolean commandEnabled) {
+		this.gameMode = gameType;
+		this.commands = commandEnabled;
 	}
 }

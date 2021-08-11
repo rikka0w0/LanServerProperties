@@ -1,8 +1,6 @@
 package rikka.lanserverproperties;
 
-import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -89,11 +87,10 @@ public class OpenToLanScreenEx {
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Pre
 	 */
-	public static void preInitShareToLanScreen(Screen gui, Font textRenderer, List<? extends GuiEventListener> list,
-			Consumer<GuiEventListener> widgetAdder, Consumer<GuiEventListener> widgetRemover,
-			IShareToLanScreenParamAccessor stlParamAccessor) {
-		if (gui.getMinecraft().hasSingleplayerServer()) {
-			IntegratedServer server = gui.getMinecraft().getSingleplayerServer();
+	public static void preInitShareToLanScreen(Screen gui, IShareToLanScreenParamAccessor stlParamAccessor) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.hasSingleplayerServer()) {
+			IntegratedServer server = mc.getSingleplayerServer();
 			if (server.isPublished()) {
 				stlParamAccessor.setDefault(server.getForcedGameType(), server.getPlayerList().isAllowCheatsForAllPlayers());
 			}
@@ -109,8 +106,9 @@ public class OpenToLanScreenEx {
 		final ReferenceHolder group = new ReferenceHolder();
 		widgetAdder.accept(group);
 
-		if (gui.getMinecraft().hasSingleplayerServer()) {
-			final IntegratedServer server = gui.getMinecraft().getSingleplayerServer();
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.hasSingleplayerServer()) {
+			final IntegratedServer server = mc.getSingleplayerServer();
 			if (server.isPublished()) {
 				// Remove the original button if the server is already published
 				Button openToLanButton = findButton(list, "lanServer.start");
@@ -122,7 +120,7 @@ public class OpenToLanScreenEx {
 						new TranslatableComponent("gui.done"),
 						(btn) -> {
 							applyServerConfig(server, stlParamAccessor, group);
-							gui.getMinecraft().setScreen(stlParamAccessor.getLastScreen());
+							Minecraft.getInstance().setScreen(stlParamAccessor.getLastScreen());
 						});
 				widgetAdder.accept(openToLanButton);
 			} else {
@@ -154,11 +152,10 @@ public class OpenToLanScreenEx {
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Post
 	 */
-	public static void initPauseScreen(Screen gui, Font textRenderer, List<? extends GuiEventListener> list,
-			Consumer<GuiEventListener> widgetAdder, Consumer<GuiEventListener> widgetRemover) {
+	public static void initPauseScreen(Screen gui, List<? extends GuiEventListener> list) {
 		Button shareToLanButton = findButton(list, "menu.shareToLan");
 		if (shareToLanButton != null) {
-			shareToLanButton.active = gui.getMinecraft().hasSingleplayerServer();
+			shareToLanButton.active = Minecraft.getInstance().hasSingleplayerServer();
 		}
 	}
 
@@ -166,9 +163,9 @@ public class OpenToLanScreenEx {
 	 * Forge: GuiScreenEvent.DrawScreenEvent.Post
 	 */
 	public static void postDraw(Screen gui, Font textRenderer, PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-
-		if (gui.getMinecraft().hasSingleplayerServer()) {
-			final IntegratedServer server = gui.getMinecraft().getSingleplayerServer();
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.hasSingleplayerServer()) {
+			final IntegratedServer server = mc.getSingleplayerServer();
 			if (server.isPublished()) {
 				Screen.drawString(matrixStack, textRenderer, ip4ListeningLabel, gui.width / 2 - 155, gui.height - 66, 10526880);
 				try {

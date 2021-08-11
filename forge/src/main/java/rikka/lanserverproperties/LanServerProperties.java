@@ -73,8 +73,7 @@ public class LanServerProperties {
 		public static void onGuiPreInit(GuiScreenEvent.InitGuiEvent.Pre event) {
 			Screen gui = event.getGui();
 			if (gui instanceof ShareToLanScreen) {
-				OpenToLanScreenEx.preInitShareToLanScreen(gui, gui.font, event.getWidgetList(), event::addWidget, event::removeWidget,
-						new ForgeSTLParamAccessor((ShareToLanScreen) gui));
+				OpenToLanScreenEx.preInitShareToLanScreen(gui, new ForgeSTLParamAccessor((ShareToLanScreen) gui));
 			}
 		}
 
@@ -85,7 +84,7 @@ public class LanServerProperties {
 				OpenToLanScreenEx.postInitShareToLanScreen(gui, gui.font, event.getWidgetList(), event::addWidget, event::removeWidget,
 						new ForgeSTLParamAccessor((ShareToLanScreen) gui));
 			} else if (gui instanceof PauseScreen) {
-				OpenToLanScreenEx.initPauseScreen(gui, gui.font, event.getWidgetList(), event::addWidget, event::removeWidget);
+				OpenToLanScreenEx.initPauseScreen(gui, event.getWidgetList());
 			}
 		}
 
