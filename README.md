@@ -2,13 +2,17 @@
 For Minecraft 1.12.2–1.7.1, Forge and Fabric.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
-* Allows for a port customization
+* Allows for a port customization.
+* Allows a user to disable PvP.
 * Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.
-* This mod is client only, installing on a dedicated server will not affact anything.
+* Allows editing server configuration from the same "Open to LAN" button after the server is published.
+
+## Note
+* This mod is client-only, installing on a dedicated server will not affact anything.
 * Only the Lan server owner need to install this mod.
 * Installing this mod does not prevent you from joining other vanilla or mod servers.
 
-##Dependencies
+## Dependencies
 ### Forge Version
 You need to install Forge and then install this mod.
 

@@ -26,7 +26,7 @@ Enhances the vanilla Minecraft "Open to LAN" screen, which now also:
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[37.0.5,)" #mandatory
+    versionRange="[37.0.27,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
