@@ -1,7 +1,6 @@
 package rikka.lanserverproperties.mixin;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameType;
+
 import rikka.lanserverproperties.IShareToLanScreenParamAccessor;
 import rikka.lanserverproperties.OpenToLanScreenEx;
 
@@ -37,31 +37,24 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	@Shadow
 	private boolean commands;
 
-	@SuppressWarnings("unchecked")
 	@Unique
-	private <T extends Widget> void addRenderableGeneral(GuiEventListener widget) {
-		this.addRenderableOnly((T) widget);
+	private <T extends Widget> void remove(GuiEventListener widget) {
+		this.removeWidget(widget);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Unique
-	private <T extends GuiEventListener & NarratableEntry> void addWidgetGeneral(GuiEventListener widget) {
-		this.addWidget((T) widget);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Unique
-	private final Consumer<GuiEventListener> add = (b) -> {
+	private final <R extends Widget, G extends GuiEventListener & NarratableEntry> void add(GuiEventListener b) {
 		if (b instanceof GuiEventListener) {
 			if (b instanceof NarratableEntry) {
-				addWidgetGeneral(b);
+				this.addWidget((G) b);
 			} else {
 				((List<GuiEventListener>)this.children()).add(b);
 			}
 		}
 		if (b instanceof Widget)
-			addRenderableGeneral(b);
-	};
+			this.addRenderableOnly((R) b);
+	}
 
 	protected MixinOpenToLanScreen(Component text) {
 		super(text);
@@ -89,7 +82,7 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 
 	@Inject(method = "init", at = @At("TAIL"))
 	protected void init_tail(CallbackInfo ci) {
-		OpenToLanScreenEx.postInitShareToLanScreen(this, this.font, this.children(), add, this::removeWidget, this);
+		OpenToLanScreenEx.postInitShareToLanScreen(this, this.font, this.children(), this::add, this::remove, this);
 	}
 
 	@Inject(method = "render", at = @At("TAIL"))
