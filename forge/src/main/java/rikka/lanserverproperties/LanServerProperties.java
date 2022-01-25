@@ -5,13 +5,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
 
 @Mod(LanServerProperties.MODID)
 public class LanServerProperties {
@@ -27,7 +26,7 @@ public class LanServerProperties {
 
 		// Make sure servers without this Mod are not recognized as incompatible by the client
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
-				() -> new IExtensionPoint.DisplayTest(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true)
+				() -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true)
 				);
 
 		// Register the GuiOpenEvent handler on client side only
@@ -70,31 +69,31 @@ public class LanServerProperties {
 			MinecraftForge.EVENT_BUS.addListener(ClientHandler::onGuiDraw);
 		}
 
-		public static void onGuiPreInit(GuiScreenEvent.InitGuiEvent.Pre event) {
-			Screen gui = event.getGui();
+		public static void onGuiPreInit(ScreenEvent.InitScreenEvent.Pre event) {
+			Screen gui = event.getScreen();
 			if (gui instanceof ShareToLanScreen) {
 				OpenToLanScreenEx.preInitShareToLanScreen(gui, new ForgeSTLParamAccessor((ShareToLanScreen) gui));
 			}
 		}
 
-		public static void onGuiPostInit(GuiScreenEvent.InitGuiEvent.Post event) {
-			Screen gui = event.getGui();
+		public static void onGuiPostInit(ScreenEvent.InitScreenEvent.Post event) {
+			Screen gui = event.getScreen();
 			if (gui instanceof ShareToLanScreen) {
 				// Made public by access transformer, f_96547_, Screen.font
-				OpenToLanScreenEx.postInitShareToLanScreen(gui, gui.font, event.getWidgetList(), event::addWidget, event::removeWidget,
+				OpenToLanScreenEx.postInitShareToLanScreen(gui, gui.font, event.getListenersList(), event::addListener, event::removeListener,
 						new ForgeSTLParamAccessor((ShareToLanScreen) gui));
 			} else if (gui instanceof PauseScreen) {
-				OpenToLanScreenEx.initPauseScreen(gui, event.getWidgetList());
+				OpenToLanScreenEx.initPauseScreen(gui, event.getListenersList());
 			}
 		}
 
-		public static void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
-			Screen gui = event.getGui();
+		public static void onGuiDraw(ScreenEvent.DrawScreenEvent.Post event) {
+			Screen gui = event.getScreen();
 			if (!(gui instanceof ShareToLanScreen))
 				return;
 
-			OpenToLanScreenEx.postDraw(gui, gui.font, event.getMatrixStack(),
-					event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+			OpenToLanScreenEx.postDraw(gui, gui.font, event.getPoseStack(),
+					event.getMouseX(), event.getMouseY(), event.getPartialTicks());
 		}
 	}
 }
