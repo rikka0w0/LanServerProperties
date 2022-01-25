@@ -1,5 +1,5 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.7.1, Forge and Fabric.
+For Minecraft 1.12.2–1.18.1, Forge and Fabric.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization.
@@ -17,16 +17,14 @@ When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" scre
 You need to install Forge and then install this mod.
 
 ### Fabric Version
-You need to install Fabric Loader and then install this mod. Fabric API is optional.
+You need to install Fabric Loader and then install this mod. Fabric API is optional but highly recommended.
 
 ## For developers
-To modify and debug the code, first import the repo as a Gradle project in Eclipse IDE, and then run the gradle task `genEclipseRuns`.
-Most design work should happen in Fabric using yarn mapping. However, after remapping (see the following section), the forge folder can be imported to IDE as well.
-If the forge part cannot be imported into Eclipse, please copy `gradlew`, `gradlew.bat` and `gradle` folder into `forge` folder and retry.
+To modify and debug the code, first import the "forge" or "fabric" folder as a Gradle project in Eclipse IDE, and then run the gradle task `genEclipseRuns`.
 
-Windows users need to replace `./` and `../` with `.\` and `..\` respectively.
+Windows users need to replace `./` and `../` with `.\` and `..\`, respectively.
 
-Since 1.17.1, LSP for Fabric and Forge share common code as much as possible. The entire code base uses Minecraft official mapping.
+Since 1.17.1, LSP for Fabric and Forge share common code as much as possible. The shared code base uses Minecraft official mapping.
 
 ### Compile Fabric artifact
 ```
@@ -42,7 +40,7 @@ cd LanServerProperties/forge
 ./gradlew build
 ```
 
-### To specify JRE path (Since 1.17.1, Minecraft requires Java 16 or above):
+### To specify JRE path (Since 1.18.1, Minecraft requires Java 17):
 ```
 ./gradlew -Dorg.gradle.java.home=/path_to_jdk_directory <commands>
 ```
