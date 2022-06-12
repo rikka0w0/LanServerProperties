@@ -4,8 +4,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public enum OnlineMode {
 	online_onlineUUIDOnly(true, false, "on"),
-	offline_tryOnlineUUIDFirst(false, true, "off.vanilla"),
-	offline_offlineUUIDOnly(false, false, "off.fixed");
+	offline_tryOnlineUUIDFirst(false, true, "off.fixed"),
+	offline_offlineUUIDOnly(false, false, "off.vanilla");
 
 	private final static String translationKey = "lanserverproperties.options.online_mode";
 	public final static TranslatableComponent translation = new TranslatableComponent(translationKey);

@@ -64,17 +64,8 @@ public class LanServerProperties {
 
 	private static class ClientHandler {
 		public static void registerGuiEventHandler() {
-			MinecraftForge.EVENT_BUS.addListener(ClientHandler::onGuiPreInit);
 			MinecraftForge.EVENT_BUS.addListener(ClientHandler::onGuiPostInit);
 			MinecraftForge.EVENT_BUS.addListener(ClientHandler::onGuiDraw);
-		}
-
-		public static void onGuiPreInit(ScreenEvent.InitScreenEvent.Pre event) {
-			Screen gui = event.getScreen();
-			if (gui instanceof ShareToLanScreen) {
-				OpenToLanScreenEx hook = getLSPData((ShareToLanScreen) gui);
-				hook.preInitShareToLanScreen();
-			}
 		}
 
 		public static void onGuiPostInit(ScreenEvent.InitScreenEvent.Post event) {
