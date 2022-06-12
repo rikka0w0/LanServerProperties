@@ -29,6 +29,8 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	private final static String lambda$init$2 = "method_19851"; // Use lambda$init$2 in dev env
 	private final static String HttpUtil_getAvailablePort = "net/minecraft/util/HttpUtil.getAvailablePort()I";
 
+	private OpenToLanScreenEx lsp_objects;
+
 	@Shadow
 	@Final
 	private Screen lastScreen;
@@ -60,29 +62,29 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 		super(text);
 	}
 
-	@Inject(method = lambda$init$2, at = @At("HEAD"))
-	private void onOpenToLanClicked(CallbackInfo ci) {
-		OpenToLanScreenEx.onOpenToLanClicked();
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void hookConstructor(CallbackInfo ci) {
+		this.lsp_objects = new OpenToLanScreenEx((ShareToLanScreen)(Object)this, (IShareToLanScreenParamAccessor)this);
 	}
 
 	@Redirect(method = lambda$init$2, at = @At(value = "INVOKE", ordinal = 0, target = HttpUtil_getAvailablePort))
 	private int getServerPort() {
-		return OpenToLanScreenEx.getServerPort();
+		return this.lsp_objects.getServerPort();
 	}
 
 	@Inject(method = lambda$init$2, at = @At("TAIL"))
 	private void onLanServerStarted(CallbackInfo ci) {
-		OpenToLanScreenEx.onOpenToLanClosed();
+		this.lsp_objects.onOpenToLanClosed();
 	}
 
 	@Inject(method = "init", at = @At("HEAD"))
 	protected void init_head(CallbackInfo ci) {
-		OpenToLanScreenEx.preInitShareToLanScreen(this, this);
+		this.lsp_objects.preInitShareToLanScreen();
 	}
 
 	@Inject(method = "init", at = @At("TAIL"))
 	protected void init_tail(CallbackInfo ci) {
-		OpenToLanScreenEx.postInitShareToLanScreen(this, this.font, this.children(), this::add, this::remove, this);
+		this.lsp_objects.postInitShareToLanScreen(this.font, this.children(), this::add, this::remove);
 	}
 
 	@Inject(method = "render", at = @At("TAIL"))
