@@ -72,16 +72,17 @@ public class LanServerProperties {
 		public static void onGuiPreInit(ScreenEvent.InitScreenEvent.Pre event) {
 			Screen gui = event.getScreen();
 			if (gui instanceof ShareToLanScreen) {
-				OpenToLanScreenEx.preInitShareToLanScreen(gui, new ForgeSTLParamAccessor((ShareToLanScreen) gui));
+				OpenToLanScreenEx hook = getLSPData((ShareToLanScreen) gui);
+				hook.preInitShareToLanScreen();
 			}
 		}
 
 		public static void onGuiPostInit(ScreenEvent.InitScreenEvent.Post event) {
 			Screen gui = event.getScreen();
 			if (gui instanceof ShareToLanScreen) {
+				OpenToLanScreenEx hook = getLSPData((ShareToLanScreen) gui);
 				// Made public by access transformer, f_96547_, Screen.font
-				OpenToLanScreenEx.postInitShareToLanScreen(gui, gui.font, event.getListenersList(), event::addListener, event::removeListener,
-						new ForgeSTLParamAccessor((ShareToLanScreen) gui));
+				hook.postInitShareToLanScreen(gui.font, event.getListenersList(), event::addListener, event::removeListener);
 			} else if (gui instanceof PauseScreen) {
 				OpenToLanScreenEx.initPauseScreen(gui, event.getListenersList());
 			}
@@ -96,4 +97,19 @@ public class LanServerProperties {
 					event.getMouseX(), event.getMouseY(), event.getPartialTicks());
 		}
 	}
+
+	/**
+	 *  Coremod callback
+	 */
+	public static OpenToLanScreenEx attachLSPData(ShareToLanScreen screen) {
+		return new OpenToLanScreenEx(screen, new ForgeSTLParamAccessor(screen));
+	}
+
+	/**
+	 *  Populated by Forge coremod
+	 */
+	private static OpenToLanScreenEx getLSPData(ShareToLanScreen screen) {
+		throw new RuntimeException("Coremod implementation failed!");
+	}
+
 }

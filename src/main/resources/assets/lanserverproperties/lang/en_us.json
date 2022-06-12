@@ -1,6 +1,12 @@
 {
-  "lanserverproperties.gui.online_mode": "Online Mode",
-  "lanserverproperties.gui.online_mode_desc": "Disabling online mode will allow also unauthenticated players to join the LAN server.",
+  "lanserverproperties.options.online_mode": "Online Mode",
+  "lanserverproperties.options.online_mode.on": "Online Mode: ON",
+  "lanserverproperties.options.online_mode.on.message": "Enabling online mode will only allow players logged in with valid Microsoft/Mojang accounts to join the LAN server.",
+  "lanserverproperties.options.online_mode.off.vanilla": "Online Mode: OFF",
+  "lanserverproperties.options.online_mode.off.vanilla.message": "Disabling online mode will allow anyone to join the LAN server.",
+  "lanserverproperties.options.online_mode.off.fixed": "Offline Mode + UUID Fix",
+  "lanserverproperties.options.online_mode.off.fixed.message": "This mode will allow anyone to join the LAN server while retaining the UUID for those who logged in with their Microsoft/Mojang accounts. Use this mode if you are migrating from the online mode, it prevents loss of inventories.",
+
   "lanserverproperties.gui.pvp_allowed": "PvP Allowed",
   "lanserverproperties.gui.ip4_listening": "Listening on (IPv4):",
   "lanserverproperties.gui.port": "Port"

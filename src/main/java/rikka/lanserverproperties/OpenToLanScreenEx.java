@@ -2,7 +2,7 @@ package rikka.lanserverproperties;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Stack;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,63 +10,48 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
 
 public class OpenToLanScreenEx {
 	private final static boolean defaultOnlineMode = true;
 	private final static boolean defaultPvpAllowed = true;
 	private final static int defaultPort = 25565;
-	private final static TranslatableComponent onlinemodeLabel = new TranslatableComponent("lanserverproperties.gui.online_mode");
-	private final static TranslatableComponent onlinemodeDescTooltip = new TranslatableComponent("lanserverproperties.gui.online_mode_desc");
+
 	private final static TranslatableComponent pvpAllowedLabel = new TranslatableComponent("lanserverproperties.gui.pvp_allowed");
 	private final static TranslatableComponent portDescLabel = new TranslatableComponent("lanserverproperties.gui.port");
 	private final static TranslatableComponent ip4ListeningLabel = new TranslatableComponent("lanserverproperties.gui.ip4_listening");
 
-	private final static ThreadLocal<Stack<ReferenceHolder>> references = ThreadLocal.withInitial(Stack::new);
+	private final ShareToLanScreen screen;
+	private final IShareToLanScreenParamAccessor stlParamAccessor;
+	private boolean pvpAllowed;
+	private OnlineMode onlineMode;
+	private int port = defaultPort;
 
-	private static ReferenceHolder peekReference() {
-		if (references.get().empty()) {
-			System.err.println("[LSP] OpenToLanScreenEx.references is not balanced!");
-			return null;
-		} else {
-			return references.get().peek();
-		}
+	public OpenToLanScreenEx(ShareToLanScreen screen, IShareToLanScreenParamAccessor stlParamAccessor) {
+		this.screen = screen;
+		this.stlParamAccessor = stlParamAccessor;
+		final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+		this.onlineMode = OnlineMode.of(server.isPublished() ? server.usesAuthentication() : defaultOnlineMode,
+				UUIDFixer.try_online_first);
+		this.pvpAllowed = server.isPublished() ? server.isPvpAllowed() : defaultPvpAllowed;
 	}
 
-	private static ReferenceHolder popReference() {
-		if (references.get().empty()) {
-			System.err.println("[LSP] OpenToLanScreenEx.references is not balanced!");
-			return null;
-		} else {
-			return references.get().pop();
-		}
-	}
-
-	private static void pushReference(ReferenceHolder ref) {
-		if (ref == null) {
-			System.err.println("[LSP] References is invalid!");
-		} else {
-			references.get().push(ref);
-		}
-	}
-
-	private static class ReferenceHolder extends InvisibleWidgetGroup {
-		public ToggleButton pvpAllowedButton;
-		public ToggleButton onlineModeButton;
-		public IPAddressTextField tfwPort;
-	}
-
-	private static void applyServerConfig(IntegratedServer server, IShareToLanScreenParamAccessor stlParamAccessor, ReferenceHolder ref) {
+	private void applyServerConfig(IntegratedServer server, IShareToLanScreenParamAccessor stlParamAccessor) {
 		if (stlParamAccessor != null) {
 			server.setDefaultGameType(stlParamAccessor.getGameType());
 			server.getPlayerList().setAllowCheatsForAllPlayers(stlParamAccessor.isCommandEnabled());
 		}
-		server.setUsesAuthentication(ref.onlineModeButton.getState());
-		server.setPvpAllowed(ref.pvpAllowedButton.getState());
+		server.setUsesAuthentication(this.onlineMode.onlineModeEnabled);
+		server.setPvpAllowed(this.pvpAllowed);
+		UUIDFixer.try_online_first = this.onlineMode.tryOnlineUUIDFirst;
 	}
 
 	private static Button findButton(List<? extends GuiEventListener> list, String vanillaLangKey) {
@@ -87,7 +72,7 @@ public class OpenToLanScreenEx {
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Pre
 	 */
-	public static void preInitShareToLanScreen(Screen gui, IShareToLanScreenParamAccessor stlParamAccessor) {
+	public void preInitShareToLanScreen() {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.hasSingleplayerServer()) {
 			IntegratedServer server = mc.getSingleplayerServer();
@@ -100,52 +85,51 @@ public class OpenToLanScreenEx {
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Post
 	 */
-	public static void postInitShareToLanScreen(Screen gui, Font textRenderer, List<? extends GuiEventListener> list,
-			Consumer<GuiEventListener> widgetAdder, Consumer<GuiEventListener> widgetRemover,
-			IShareToLanScreenParamAccessor stlParamAccessor) {
-		final ReferenceHolder group = new ReferenceHolder();
-		widgetAdder.accept(group);
-
+	public void postInitShareToLanScreen(Font textRenderer, List<? extends GuiEventListener> list,
+			Consumer<GuiEventListener> widgetAdder, Consumer<GuiEventListener> widgetRemover) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.hasSingleplayerServer()) {
 			final IntegratedServer server = mc.getSingleplayerServer();
+			final Button openToLanButton = findButton(list, "lanServer.start");
 			if (server.isPublished()) {
 				// Remove the original button if the server is already published
-				Button openToLanButton = findButton(list, "lanServer.start");
 				if (openToLanButton != null) {
 					widgetRemover.accept(openToLanButton);
 				}
 
-				openToLanButton = new Button(gui.width / 2 - 155, gui.height - 28, 150, 20,
+				widgetAdder.accept(new Button(this.screen.width / 2 - 155, this.screen.height - 28, 150, 20,
 						new TranslatableComponent("gui.done"),
 						(btn) -> {
-							applyServerConfig(server, stlParamAccessor, group);
+							this.applyServerConfig(server, stlParamAccessor);
 							Minecraft.getInstance().setScreen(stlParamAccessor.getLastScreen());
-						});
-				widgetAdder.accept(openToLanButton);
+						}));
 			} else {
 				// Text field for port
-				group.tfwPort =
-						new IPAddressTextField(textRenderer, gui.width / 2 - 154, gui.height - 54, 147, 20,
-								portDescLabel, defaultPort);
-				widgetAdder.accept(group.tfwPort);
+				widgetAdder.accept(new PortEditBox(textRenderer, this.screen.width / 2 - 154, this.screen.height - 54, 147, 20,
+						portDescLabel, defaultPort, (portField, isFormatOk) -> {
+							openToLanButton.active = isFormatOk;
+							if (isFormatOk) {
+								this.port = portField.getServerPort();
+							}
+						}));
 			}
 
 			// Add our own widgets
 			// Toggle button for onlineMode
-			group.onlineModeButton =
-					new ToggleButton(gui.width / 2 - 155, 124, 150, 20,
-							onlinemodeLabel, server.isPublished() ? server.usesAuthentication() : defaultOnlineMode,
-							(screen, matrixStack, mouseX, mouseY) -> gui.renderTooltip(matrixStack, onlinemodeDescTooltip, mouseX, mouseY)
-							);
-			widgetAdder.accept(group.onlineModeButton);
+			widgetAdder.accept(new CycleButton.Builder<OnlineMode>((state) -> state.stateName)
+				.withValues(OnlineMode.values())
+				.withInitialValue(this.onlineMode).withTooltip((curState) -> textRenderer.split(curState.tooltip, 200))
+				.displayOnlyValue()
+				.create(this.screen.width / 2 - 155, 124, 150, 20, OnlineMode.translation,
+						(dummyButton, newVal) -> this.onlineMode = newVal)
+			);
 
 			// Toggle button for pvpAllowed
-			group.pvpAllowedButton =
-					new ToggleButton(gui.width / 2 + 5, 124, 150, 20,
-							pvpAllowedLabel, server.isPublished() ? server.isPvpAllowed() : defaultPvpAllowed,
-									(screen, matrixStack, mouseX, mouseY) -> {});
-			widgetAdder.accept(group.pvpAllowedButton);
+			widgetAdder.accept(CycleButton
+				.onOffBuilder(this.pvpAllowed)
+				.create(this.screen.width / 2 + 5, 124, 150, 20, pvpAllowedLabel,
+						(dummyButton, newVal) -> this.pvpAllowed = newVal)
+			);
 		}
 	}
 
@@ -179,40 +163,26 @@ public class OpenToLanScreenEx {
 				Screen.drawString(matrixStack, textRenderer, portDescLabel, gui.width / 2 - 155, gui.height - 66, 10526880);
 			}
 		}
-	}
 
-	/**
-	 *  Mixin/ Coremod callback
-	 */
-	public static int getServerPort() {
-		ReferenceHolder ref = peekReference();
-
-		if (ref != null) {
-			return ref.tfwPort.getServerPort();
+		Optional<GuiEventListener> mouserOverControl = gui.getChildAt(mouseX, mouseY);
+		if (mouserOverControl.isPresent() && mouserOverControl.get() instanceof TooltipAccessor) {
+			List<FormattedCharSequence> tooltips = ((TooltipAccessor)(mouserOverControl.get())).getTooltip();
+			gui.renderTooltip(matrixStack, tooltips, mouseX, mouseY);
 		}
-
-		return defaultPort;
 	}
 
 	/**
 	 *  Mixin/ Coremod callback
 	 */
-	public static void onOpenToLanClicked() {
-		@SuppressWarnings("resource")
-		Screen gui = Minecraft.getInstance().screen;
-		ReferenceHolder ref = InvisibleWidgetGroup.fromScreen(gui, ReferenceHolder.class);
-		pushReference(ref);
+	public int getServerPort() {
+		return this.port;
 	}
 
 	/**
 	 *  Mixin/ Coremod callback
 	 */
-	public static void onOpenToLanClosed() {
-		ReferenceHolder ref = popReference();
+	public void onOpenToLanClosed() {
 		IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
-
-		if (ref != null && server != null) {
-			applyServerConfig(server, null, ref);
-		}
+		applyServerConfig(server, null);
 	}
 }
