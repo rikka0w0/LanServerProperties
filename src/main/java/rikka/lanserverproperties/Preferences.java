@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -37,12 +38,17 @@ public class Preferences {
 	public HashMap<String, String> customUUIDMap = new HashMap<>();
 
 	@SuppressWarnings("resource")
+	public static Path getConfigFolder() {
+		return Minecraft.getInstance().gameDirectory.toPath().resolve("config");
+	}
+
 	public static Path getFileName() {
-		return Minecraft.getInstance().gameDirectory.toPath().resolve("config").resolve(preferenceFileName);
+		return getConfigFolder().resolve(preferenceFileName);
 	}
 
 	public boolean save() {
 		try {
+			Files.createDirectories(getConfigFolder());
 			Writer writer = Files.newBufferedWriter(getFileName());
 			gson.toJson(this, writer);
 			writer.flush();

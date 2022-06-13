@@ -6,8 +6,8 @@
   "lanserverproperties.options.online_mode.off.vanilla.message": "Disabling online mode will allow anyone to join the LAN server.",
   "lanserverproperties.options.online_mode.off.fixed": "Offline Mode + UUID Fix",
   "lanserverproperties.options.online_mode.off.fixed.message": "This mode will allow anyone to join the LAN server while retaining the UUID for those who logged in with their Microsoft/Mojang accounts. Use this mode if you are migrating from the online mode, it prevents loss of inventories.",
-  "lanserverproperties.options.preference_enabled": "Preference",
-  "lanserverproperties.options.preference_enabled.message": "Automatically load the settings from the stored preference.",
+  "lanserverproperties.options.preference_enabled": "Auto Load Preference",
+  "lanserverproperties.options.preference_enabled.message": "Automatically load the settings from the stored preference, if the server is not published. Otherwise, this window displays the current configuration of the server.",
   "lanserverproperties.button.preference_load": "Load Preference",
   "lanserverproperties.button.preference_save": "Save Preference",
 

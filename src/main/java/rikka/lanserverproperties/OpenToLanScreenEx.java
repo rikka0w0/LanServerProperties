@@ -180,12 +180,12 @@ public class OpenToLanScreenEx {
 				}));
 
 		// Enable Preference Button
-		widgetAdder.accept(CycleButton
+		final CycleButton<Boolean> preferenceButton = CycleButton
 				.onOffBuilder(this.preferences.enablePreference)
 				.withTooltip((curState) -> textRenderer.split(preferenceEnabledTooltip, 200))
 				.create(this.screen.width / 2 + 5, 16, 150, 20, preferenceEnabledLabel,
-						(dummyButton, newVal) -> this.preferences.enablePreference = newVal)
-			);
+						(dummyButton, newVal) -> this.preferences.enablePreference = newVal);
+		widgetAdder.accept(preferenceButton);
 
 		// Toggle button for onlineMode
 		widgetAdder.accept(new CycleButton.Builder<OnlineMode>((state) -> state.stateName)
@@ -206,7 +206,9 @@ public class OpenToLanScreenEx {
 		// Text field for port
 		final IntegerEditBox portEditBox = new IntegerEditBox(textRenderer, this.screen.width / 2 - 154, this.screen.height - 54, 147, 20,
 			portDescLabel, this.port, (ieb) -> {
-				this.enableOkButton.accept(this.validateFields.get());
+				boolean enableButtons = this.validateFields.get();
+				preferenceButton.active = enableButtons;
+				this.enableOkButton.accept(enableButtons);
 				if (ieb.isContentValid()) {
 					this.port = ieb.getValueAsInt();
 				}
@@ -219,7 +221,9 @@ public class OpenToLanScreenEx {
 		// Text field for maxPlayer
 		final IntegerEditBox portMaxPlayer = new IntegerEditBox(textRenderer, this.screen.width / 2 + 5, this.screen.height - 54, 147, 20,
 			maxPlayerDescLabel, this.maxPlayer, (ieb) -> {
-				this.enableOkButton.accept(this.validateFields.get());
+				boolean enableButtons = this.validateFields.get();
+				preferenceButton.active = enableButtons;
+				this.enableOkButton.accept(enableButtons);
 				if (ieb.isContentValid()) {
 					this.maxPlayer = ieb.getValueAsInt();
 				}
