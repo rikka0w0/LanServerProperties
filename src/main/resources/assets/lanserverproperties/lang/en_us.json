@@ -12,7 +12,7 @@
   "lanserverproperties.button.preference_save": "Save Preference",
 
   "lanserverproperties.gui.pvp_allowed": "PvP Allowed",
-  "lanserverproperties.gui.ip4_listening": "Listening on (IPv4):",
-  "lanserverproperties.gui.port": "Port",
-  "lanserverproperties.gui.max_player": "Max Player"
+  "lanserverproperties.gui.port_listening": "Listening on:",
+  "lanserverproperties.gui.port": "Port:",
+  "lanserverproperties.gui.max_player": "Max Player:"
 }

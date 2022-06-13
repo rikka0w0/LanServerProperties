@@ -1,23 +1,35 @@
 package rikka.lanserverproperties;
 
-import java.util.function.BiConsumer;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
+
+import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
-public class IntegerEditBox extends EditBox {
-	public IntegerEditBox(Font textRenderer, int x, int y, int width, int height, Component name, int defaultPort,
-			BiConsumer<IntegerEditBox, Boolean> onChanged, Function<String, Boolean> validator) {
+public class IntegerEditBox extends EditBox implements TooltipAccessor {
+	private final Function<IntegerEditBox, List<FormattedCharSequence>> toolTipSupplier;
+	private boolean contentValid;
+
+	public IntegerEditBox(Font textRenderer, int x, int y, int width, int height, Component name, int defaultVal,
+			Consumer<IntegerEditBox> onChanged,
+			Function<String, Boolean> validator,
+			Function<IntegerEditBox, List<FormattedCharSequence>> toolTipSupplier) {
 		super(textRenderer, x, y, width, height, name);
-		this.setValue(String.valueOf(defaultPort));
+		this.toolTipSupplier = toolTipSupplier == null ? (dummy) -> ImmutableList.of() : toolTipSupplier;
+		this.setValue(String.valueOf(defaultVal));
 		// Check the format, make sure the text is a valid integer
 		this.setResponder((text) -> {
-			boolean isFormatOk = validator.apply(text);
-			this.setTextColor(isFormatOk ? 0xFFFFFF : 0xFF0000);
-			onChanged.accept(this, isFormatOk);
+			this.contentValid = validator.apply(text);
+			this.setTextColor(this.contentValid ? 0xFFFFFF : 0xFF0000);
+			onChanged.accept(this);
 		});
+		this.contentValid = validator.apply(this.getValue());
 	}
 
 	/**
@@ -25,7 +37,11 @@ public class IntegerEditBox extends EditBox {
 	 * @return the port number as an integer
 	 */
 	public int getValueAsInt() {
-		return Integer.parseInt(getValue());
+		return Integer.parseInt(this.getValue());
+	}
+
+	public boolean isContentValid() {
+		return this.contentValid;
 	}
 
 	/**
@@ -50,5 +66,11 @@ public class IntegerEditBox extends EditBox {
 
 			return valid;
 		};
+	}
+
+	@Override
+	public List<FormattedCharSequence> getTooltip() {
+		List<FormattedCharSequence> ret = this.toolTipSupplier.apply(this);
+		return ret == null ? ImmutableList.of() : ret;
 	}
 }
