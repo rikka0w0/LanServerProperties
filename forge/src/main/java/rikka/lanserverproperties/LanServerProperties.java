@@ -1,8 +1,10 @@
 package rikka.lanserverproperties;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -59,6 +61,12 @@ public class LanServerProperties {
 		public void setDefault(GameType gameType, boolean commandEnabled) {
 			gui.gameMode = gameType;
 			gui.commands = commandEnabled;
+		}
+
+		@Override
+		public void setMaxPlayer(int num) {
+			PlayerList playerList = Minecraft.getInstance().getSingleplayerServer().getPlayerList();
+			playerList.maxPlayers = num;
 		}
 	}
 

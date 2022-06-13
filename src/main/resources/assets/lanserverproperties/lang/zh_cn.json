@@ -13,5 +13,6 @@
 
   "lanserverproperties.gui.pvp_allowed": "允许PvP",
   "lanserverproperties.gui.ip4_listening": "已开端口(IPv4):",
-  "lanserverproperties.gui.port": "监听端口"
+  "lanserverproperties.gui.port": "监听端口",
+  "lanserverproperties.gui.max_player": "最大玩家数"
 }

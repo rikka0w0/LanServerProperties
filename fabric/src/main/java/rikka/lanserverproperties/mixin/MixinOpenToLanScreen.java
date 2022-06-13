@@ -13,12 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 
 import rikka.lanserverproperties.IShareToLanScreenParamAccessor;
@@ -109,5 +111,11 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	public void setDefault(GameType gameType, boolean commandEnabled) {
 		this.gameMode = gameType;
 		this.commands = commandEnabled;
+	}
+
+	@Override
+	public void setMaxPlayer(int num) {
+		PlayerList playerList = Minecraft.getInstance().getSingleplayerServer().getPlayerList();
+		((PlayerListAccessor)playerList).setMaxPlayers(num);
 	}
 }

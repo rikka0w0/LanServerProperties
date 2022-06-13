@@ -8,4 +8,5 @@ public interface IShareToLanScreenParamAccessor {
 	GameType getGameType();
 	boolean isCommandEnabled();
 	void setDefault(GameType gameType, boolean commandEnabled);
+	void setMaxPlayer(int num);
 }

@@ -13,5 +13,6 @@
 
   "lanserverproperties.gui.pvp_allowed": "PvP Allowed",
   "lanserverproperties.gui.ip4_listening": "Listening on (IPv4):",
-  "lanserverproperties.gui.port": "Port"
+  "lanserverproperties.gui.port": "Port",
+  "lanserverproperties.gui.max_player": "Max Player"
 }

@@ -30,6 +30,7 @@ public class Preferences {
 	public boolean fixUUID = true;
 	public boolean allowPVP = true;
 	public int defaultPort = 25565;
+	public int maxPlayer = 8;
 
 	// TODO:
 	public boolean enableCustomUUIDMap = false;

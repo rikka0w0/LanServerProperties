@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -30,6 +31,10 @@ public class OpenToLanScreenEx {
 	private final static TranslatableComponent pvpAllowedLabel = new TranslatableComponent("lanserverproperties.gui.pvp_allowed");
 	private final static TranslatableComponent portDescLabel = new TranslatableComponent("lanserverproperties.gui.port");
 	private final static TranslatableComponent ip4ListeningLabel = new TranslatableComponent("lanserverproperties.gui.ip4_listening");
+	private final static TranslatableComponent maxPlayerDescLabel = new TranslatableComponent("lanserverproperties.gui.max_player");
+
+	private final static Function<String, Boolean> portValidator = IntegerEditBox.makeValidator(0, 65535);
+	private final static Function<String, Boolean> maxPlayerValidator = IntegerEditBox.makeValidator(0, 16);
 
 	private final ShareToLanScreen screen;
 	private final IShareToLanScreenParamAccessor stlParamAccessor;
@@ -37,6 +42,7 @@ public class OpenToLanScreenEx {
 	private boolean pvpAllowed;
 	private OnlineMode onlineMode;
 	private int port;
+	private int maxPlayer;
 
 	public OpenToLanScreenEx(ShareToLanScreen screen, IShareToLanScreenParamAccessor stlParamAccessor) {
 		this.screen = screen;
@@ -44,6 +50,9 @@ public class OpenToLanScreenEx {
 
 		final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
 		if (server.isPublished()) { // Show actual state
+			// For "this.preferences.enablePreference"
+			this.preferences = Preferences.read();
+
 			// Vanilla Configs
 			stlParamAccessor.setDefault(server.getForcedGameType(), server.getPlayerList().isAllowCheatsForAllPlayers());
 
@@ -51,6 +60,7 @@ public class OpenToLanScreenEx {
 			this.onlineMode = OnlineMode.of(server.usesAuthentication(), UUIDFixer.try_online_first);
 			this.pvpAllowed = server.isPvpAllowed();
 			this.port = server.getPort();
+			this.maxPlayer = server.getMaxPlayers();
 		} else {
 			readFromPreference(false);
 		}
@@ -69,6 +79,7 @@ public class OpenToLanScreenEx {
 		this.onlineMode = OnlineMode.of(this.preferences.onlineMode, this.preferences.fixUUID);
 		this.pvpAllowed = this.preferences.allowPVP;
 		this.port = this.preferences.defaultPort;
+		this.maxPlayer = this.preferences.maxPlayer;
 	}
 
 	private void copyToPreference() {
@@ -81,16 +92,18 @@ public class OpenToLanScreenEx {
 		this.preferences.fixUUID = this.onlineMode.tryOnlineUUIDFirst;
 		this.preferences.allowPVP = this.pvpAllowed;
 		this.preferences.defaultPort = this.port;
+		this.preferences.maxPlayer = this.maxPlayer;
 	}
 
 	private void applyServerConfig(IntegratedServer server, boolean setVanillaOptions) {
 		if (setVanillaOptions) {
-			server.setDefaultGameType(stlParamAccessor.getGameType());
-			server.getPlayerList().setAllowCheatsForAllPlayers(stlParamAccessor.isCommandEnabled());
+			server.setDefaultGameType(this.stlParamAccessor.getGameType());
+			server.getPlayerList().setAllowCheatsForAllPlayers(this.stlParamAccessor.isCommandEnabled());
 		}
 		server.setUsesAuthentication(this.onlineMode.onlineModeEnabled);
 		server.setPvpAllowed(this.pvpAllowed);
 		UUIDFixer.try_online_first = this.onlineMode.tryOnlineUUIDFirst;
+		this.stlParamAccessor.setMaxPlayer(this.maxPlayer);
 	}
 
 	private static Button findButton(List<? extends GuiEventListener> list, String vanillaLangKey) {
@@ -131,13 +144,13 @@ public class OpenToLanScreenEx {
 						}));
 			} else {
 				// Text field for port
-				widgetAdder.accept(new PortEditBox(textRenderer, this.screen.width / 2 - 154, this.screen.height - 54, 147, 20,
-						portDescLabel, this.port, (portField, isFormatOk) -> {
+				widgetAdder.accept(new IntegerEditBox(textRenderer, this.screen.width / 2 - 154, this.screen.height - 54, 147, 20,
+						portDescLabel, this.port, (ieb, isFormatOk) -> {
 							openToLanButton.active = isFormatOk;
 							if (isFormatOk) {
-								this.port = portField.getServerPort();
+								this.port = ieb.getValueAsInt();
 							}
-						}));
+						}, portValidator));
 			}
 
 			// Add our own widgets
@@ -185,6 +198,15 @@ public class OpenToLanScreenEx {
 				.create(this.screen.width / 2 + 5, 124, 150, 20, pvpAllowedLabel,
 						(dummyButton, newVal) -> this.pvpAllowed = newVal)
 			);
+
+			// Text field for maxPlayer
+			widgetAdder.accept(new IntegerEditBox(textRenderer, this.screen.width / 2 + 5, this.screen.height - 54, 147, 20,
+					maxPlayerDescLabel, this.maxPlayer, (ieb, isFormatOk) -> {
+						openToLanButton.active = isFormatOk;
+						if (isFormatOk) {
+							this.maxPlayer = ieb.getValueAsInt();
+						}
+					}, maxPlayerValidator));
 		}
 	}
 
@@ -217,6 +239,7 @@ public class OpenToLanScreenEx {
 			} else {
 				Screen.drawString(matrixStack, textRenderer, portDescLabel, gui.width / 2 - 155, gui.height - 66, 10526880);
 			}
+			Screen.drawString(matrixStack, textRenderer, maxPlayerDescLabel, gui.width / 2 + 5, gui.height - 66, 10526880);
 		}
 
 		Optional<GuiEventListener> mouserOverControl = gui.getChildAt(mouseX, mouseY);
