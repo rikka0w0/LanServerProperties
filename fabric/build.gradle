@@ -68,6 +68,13 @@ jar {
 	from "LICENSE"
 }
 
+// https://github.com/FabricMC/fabric-loom/issues/452
+afterEvaluate {
+	tasks.remapJar {
+		archiveClassifier.set("fabric")
+	}
+}
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Files;

@@ -1,11 +1,13 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.18.1, Forge and Fabric.
+For Minecraft 1.12.2–1.19, Forge and Fabric.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization.
 * Allows a user to disable PvP.
 * Allows a user to disable the online mode, so that also unauthenticated players can join the LAN server.
 * Allows editing server configuration from the same "Open to LAN" button after the server is published.
+* Allows changing maximum number of players.
+* Optionally allows the use of genuine UUID (From Microsoft/Mojang) in offline mode, this prevents the loss of inventory contents when switching from online mode to offline mode.
 
 ## Note
 * This mod is client-only, installing on a dedicated server will not affact anything.
