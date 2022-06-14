@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[39,)"
+loaderVersion="[@fml_version@,)" #mandatory
 issueTrackerURL="https://github.com/rikka0w0/LanServerProperties/issues" #optional
 license="MIT License"
 
@@ -26,15 +26,16 @@ Enhances the vanilla Minecraft "Open to LAN" screen, which now also:
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[39,)" #mandatory
+    versionRange="[@forge_version@,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="CLIENT"
+
 # Here's another dependency
 [[dependencies.lanserverproperties]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.1,)"
+    versionRange="[@minecraft_version_min@,)"
     ordering="NONE"
     side="CLIENT"

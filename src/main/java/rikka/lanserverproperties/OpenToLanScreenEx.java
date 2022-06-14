@@ -20,20 +20,19 @@ import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
 public class OpenToLanScreenEx {
-	private final static TranslatableComponent preferenceEnabledLabel = new TranslatableComponent("lanserverproperties.options.preference_enabled");
-	private final static TranslatableComponent preferenceEnabledTooltip = new TranslatableComponent("lanserverproperties.options.preference_enabled.message");
-	private final static TranslatableComponent preferenceLoadLabel = new TranslatableComponent("lanserverproperties.button.preference_load");
-	private final static TranslatableComponent preferenceSaveLabel = new TranslatableComponent("lanserverproperties.button.preference_save");
-	private final static TranslatableComponent pvpAllowedLabel = new TranslatableComponent("lanserverproperties.gui.pvp_allowed");
-	private final static TranslatableComponent portDescLabel = new TranslatableComponent("lanserverproperties.gui.port");
-	private final static TranslatableComponent portListeningLabel = new TranslatableComponent("lanserverproperties.gui.port_listening");
-	private final static TranslatableComponent maxPlayerDescLabel = new TranslatableComponent("lanserverproperties.gui.max_player");
+	private final static Component preferenceEnabledLabel = Component.translatable("lanserverproperties.options.preference_enabled");
+	private final static Component preferenceEnabledTooltip = Component.translatable("lanserverproperties.options.preference_enabled.message");
+	private final static Component preferenceLoadLabel = Component.translatable("lanserverproperties.button.preference_load");
+	private final static Component preferenceSaveLabel = Component.translatable("lanserverproperties.button.preference_save");
+	private final static Component pvpAllowedLabel = Component.translatable("lanserverproperties.gui.pvp_allowed");
+	private final static Component portDescLabel = Component.translatable("lanserverproperties.gui.port");
+	private final static Component portListeningLabel = Component.translatable("lanserverproperties.gui.port_listening");
+	private final static Component maxPlayerDescLabel = Component.translatable("lanserverproperties.gui.max_player");
 
 	private final static Function<String, Boolean> portValidator = IntegerEditBox.makeValidator(0, 65535);
 	private final static Function<String, Boolean> maxPlayerValidator = IntegerEditBox.makeValidator(0, 16);
@@ -117,8 +116,8 @@ public class OpenToLanScreenEx {
 			if (child instanceof Button) {
 				Button button = (Button) child;
 				Component component = button.getMessage();
-				if (component instanceof TranslatableComponent &&
-						((TranslatableComponent)component).getKey().equals(vanillaLangKey)) {
+				if (component.getContents() instanceof TranslatableContents &&
+						((TranslatableContents)component.getContents()).getKey().equals(vanillaLangKey)) {
 					return button;
 				}
 			}
@@ -172,20 +171,20 @@ public class OpenToLanScreenEx {
 					preferenceLoadLabel));
 
 		// Save Preference Button
-		widgetAdder.accept(
-			new Button(this.screen.width / 2 - 155, 16, 150, 20, preferenceSaveLabel,
+		final Button preferenceButton = new Button(this.screen.width / 2 - 155, 16, 150, 20, preferenceSaveLabel,
 				(btn) -> {
 					this.copyToPreference();
 					this.preferences.save();
-				}));
+				});
+		widgetAdder.accept(preferenceButton);
 
 		// Enable Preference Button
-		final CycleButton<Boolean> preferenceButton = CycleButton
+		widgetAdder.accept(CycleButton
 				.onOffBuilder(this.preferences.enablePreference)
 				.withTooltip((curState) -> textRenderer.split(preferenceEnabledTooltip, 200))
 				.create(this.screen.width / 2 + 5, 16, 150, 20, preferenceEnabledLabel,
-						(dummyButton, newVal) -> this.preferences.enablePreference = newVal);
-		widgetAdder.accept(preferenceButton);
+						(dummyButton, newVal) -> this.preferences.enablePreference = newVal)
+			);
 
 		// Toggle button for onlineMode
 		widgetAdder.accept(new CycleButton.Builder<OnlineMode>((state) -> state.stateName)
@@ -212,7 +211,7 @@ public class OpenToLanScreenEx {
 				if (ieb.isContentValid()) {
 					this.port = ieb.getValueAsInt();
 				}
-			}, portValidator, (ieb) -> server.isPublished() ? textRenderer.split(new TextComponent(IPUtils.getIPs()), 250) : null);
+			}, portValidator, (ieb) -> server.isPublished() ? textRenderer.split(Component.literal(IPUtils.getIPs()), 250) : null);
 		widgetAdder.accept(portEditBox);
 		if (server.isPublished()) {
 			portEditBox.setEditable(false);

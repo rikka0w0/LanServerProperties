@@ -1,6 +1,6 @@
 package rikka.lanserverproperties;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public enum OnlineMode {
 	online_onlineUUIDOnly(true, false, "on"),
@@ -8,16 +8,16 @@ public enum OnlineMode {
 	offline_offlineUUIDOnly(false, false, "off.vanilla");
 
 	private final static String translationKey = "lanserverproperties.options.online_mode";
-	public final static TranslatableComponent translation = new TranslatableComponent(translationKey);
+	public final static Component translation = Component.translatable(translationKey);
 
 	public final boolean onlineModeEnabled, tryOnlineUUIDFirst;
-	public final TranslatableComponent stateName, tooltip;
+	public final Component stateName, tooltip;
 
 	private OnlineMode(boolean onlineModeEnabled, boolean tryOnlineUUIDFirst, String key) {
 		this.onlineModeEnabled = onlineModeEnabled;
 		this.tryOnlineUUIDFirst = tryOnlineUUIDFirst;
-		this.stateName = new TranslatableComponent(translationKey + "." + key);
-		this.tooltip = new TranslatableComponent(translationKey + "." + key + ".message");
+		this.stateName = Component.translatable(translationKey + "." + key);
+		this.tooltip = Component.translatable(translationKey + "." + key + ".message");
 	}
 
 	public static OnlineMode of(boolean onlineModeEnabled, boolean tryOnlineUUIDFirst) {

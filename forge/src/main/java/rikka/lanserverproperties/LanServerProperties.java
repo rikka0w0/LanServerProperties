@@ -93,7 +93,7 @@ public class LanServerProperties {
 				return;
 
 			OpenToLanScreenEx.postDraw(gui, gui.font, event.getPoseStack(),
-					event.getMouseX(), event.getMouseY(), event.getPartialTicks());
+					event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
 	}
 
