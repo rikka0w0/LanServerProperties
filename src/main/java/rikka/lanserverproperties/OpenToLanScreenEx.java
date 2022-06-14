@@ -172,20 +172,20 @@ public class OpenToLanScreenEx {
 					preferenceLoadLabel));
 
 		// Save Preference Button
-		widgetAdder.accept(
-			new Button(this.screen.width / 2 - 155, 16, 150, 20, preferenceSaveLabel,
+		final Button preferenceButton = new Button(this.screen.width / 2 - 155, 16, 150, 20, preferenceSaveLabel,
 				(btn) -> {
 					this.copyToPreference();
 					this.preferences.save();
-				}));
+				});
+		widgetAdder.accept(preferenceButton);
 
 		// Enable Preference Button
-		final CycleButton<Boolean> preferenceButton = CycleButton
+		widgetAdder.accept(CycleButton
 				.onOffBuilder(this.preferences.enablePreference)
 				.withTooltip((curState) -> textRenderer.split(preferenceEnabledTooltip, 200))
 				.create(this.screen.width / 2 + 5, 16, 150, 20, preferenceEnabledLabel,
-						(dummyButton, newVal) -> this.preferences.enablePreference = newVal);
-		widgetAdder.accept(preferenceButton);
+						(dummyButton, newVal) -> this.preferences.enablePreference = newVal)
+			);
 
 		// Toggle button for onlineMode
 		widgetAdder.accept(new CycleButton.Builder<OnlineMode>((state) -> state.stateName)

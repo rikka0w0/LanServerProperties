@@ -1,5 +1,6 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.18.1, Forge and Fabric.
+For Minecraft 1.12.2–1.18.2, Forge and Fabric.
+This branch supports both 1.18.1 and 1.18.2.
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization.
