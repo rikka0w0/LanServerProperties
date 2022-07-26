@@ -76,7 +76,7 @@ public class LanServerProperties {
 			MinecraftForge.EVENT_BUS.addListener(ClientHandler::onGuiDraw);
 		}
 
-		public static void onGuiPostInit(ScreenEvent.InitScreenEvent.Post event) {
+		public static void onGuiPostInit(ScreenEvent.Init.Post event) {
 			Screen gui = event.getScreen();
 			if (gui instanceof ShareToLanScreen) {
 				OpenToLanScreenEx hook = getLSPData((ShareToLanScreen) gui);
@@ -87,7 +87,7 @@ public class LanServerProperties {
 			}
 		}
 
-		public static void onGuiDraw(ScreenEvent.DrawScreenEvent.Post event) {
+		public static void onGuiDraw(ScreenEvent.Render.Post event) {
 			Screen gui = event.getScreen();
 			if (!(gui instanceof ShareToLanScreen))
 				return;
@@ -110,5 +110,4 @@ public class LanServerProperties {
 	private static OpenToLanScreenEx getLSPData(ShareToLanScreen screen) {
 		throw new RuntimeException("Coremod implementation failed!");
 	}
-
 }
