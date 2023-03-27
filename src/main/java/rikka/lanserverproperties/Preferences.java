@@ -22,7 +22,7 @@ public class Preferences {
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static final String preferenceFileName = "lsp.json";
 
-	public boolean enablePreference = false;
+	public boolean enablePreference = true;
 
 	// Vanilla Configs
 	public GameType gameMode = GameType.SURVIVAL;
