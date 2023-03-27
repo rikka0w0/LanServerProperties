@@ -58,15 +58,28 @@ public class LanServerProperties {
 		}
 
 		@Override
-		public void setDefault(GameType gameType, boolean commandEnabled) {
+		public void setDefault(GameType gameType, boolean commandEnabled, int port) {
 			gui.gameMode = gameType;
 			gui.commands = commandEnabled;
+			gui.port = port;
 		}
 
 		@Override
 		public void setMaxPlayer(int num) {
 			PlayerList playerList = Minecraft.getInstance().getSingleplayerServer().getPlayerList();
 			playerList.maxPlayers = num;
+		}
+
+		@Override
+		public int getPort() {
+			return gui.port;
+		}
+
+		@Override
+		public void movePortEditBox(int x, int y, int width, int height) {
+			gui.portEdit.setPosition(x, y);
+			gui.portEdit.setWidth(width);
+			gui.portEdit.setHeight(height);
 		}
 	}
 

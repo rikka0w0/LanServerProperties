@@ -7,6 +7,8 @@ public interface IShareToLanScreenParamAccessor {
 	Screen getLastScreen();
 	GameType getGameType();
 	boolean isCommandEnabled();
-	void setDefault(GameType gameType, boolean commandEnabled);
+	void setDefault(GameType gameType, boolean commandEnabled, int port);
 	void setMaxPlayer(int num);
+	int getPort();
+	void movePortEditBox(int x, int y, int width, int height);
 }

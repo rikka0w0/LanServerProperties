@@ -1,6 +1,8 @@
 {
-	"pack": {
-		"pack_format": 8,
-		"description": "Lan Server Properties"
-	}
+    "pack": {
+        "description": "Lan Server Properties",
+        "pack_format": 13,
+        "forge:client_resources_pack_format": 13,
+        "forge:server_data_pack_format": 12
+    }
 }

@@ -1,28 +1,28 @@
 package rikka.lanserverproperties;
 
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.google.common.collect.ImmutableList;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.TooltipAccessor;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 
-public class IntegerEditBox extends EditBox implements TooltipAccessor {
-	private final Function<IntegerEditBox, List<FormattedCharSequence>> toolTipSupplier;
+public class IntegerEditBox extends EditBox {
 	private boolean contentValid;
 
 	public IntegerEditBox(Font textRenderer, int x, int y, int width, int height, Component name, int defaultVal,
 			Consumer<IntegerEditBox> onChanged,
 			Function<String, Boolean> validator,
-			Function<IntegerEditBox, List<FormattedCharSequence>> toolTipSupplier) {
+			Component toolTipComponent) {
 		super(textRenderer, x, y, width, height, name);
-		this.toolTipSupplier = toolTipSupplier == null ? (dummy) -> ImmutableList.of() : toolTipSupplier;
+
+		if (toolTipComponent != null) {
+			this.setTooltip(Tooltip.create(toolTipComponent));
+		}
+
 		this.setValue(String.valueOf(defaultVal));
+
 		// Check the format, make sure the text is a valid integer
 		this.setResponder((text) -> {
 			this.contentValid = validator.apply(text);
@@ -34,6 +34,7 @@ public class IntegerEditBox extends EditBox implements TooltipAccessor {
 
 	/**
 	 * This function assumes that the context is a valid number.
+	 *
 	 * @return the port number as an integer
 	 */
 	public int getValueAsInt() {
@@ -66,11 +67,5 @@ public class IntegerEditBox extends EditBox implements TooltipAccessor {
 
 			return valid;
 		};
-	}
-
-	@Override
-	public List<FormattedCharSequence> getTooltip() {
-		List<FormattedCharSequence> ret = this.toolTipSupplier.apply(this);
-		return ret == null ? ImmutableList.of() : ret;
 	}
 }

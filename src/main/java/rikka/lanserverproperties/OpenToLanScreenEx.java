@@ -1,10 +1,8 @@
 package rikka.lanserverproperties;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -13,7 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.TooltipAccessor;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
@@ -22,7 +20,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class OpenToLanScreenEx {
 	private final static Component preferenceEnabledLabel = Component.translatable("lanserverproperties.options.preference_enabled");
@@ -34,19 +31,22 @@ public class OpenToLanScreenEx {
 	private final static Component portListeningLabel = Component.translatable("lanserverproperties.gui.port_listening");
 	private final static Component maxPlayerDescLabel = Component.translatable("lanserverproperties.gui.max_player");
 
-	private final static Function<String, Boolean> portValidator = IntegerEditBox.makeValidator(0, 65535);
 	private final static Function<String, Boolean> maxPlayerValidator = IntegerEditBox.makeValidator(0, 16);
 
 	private final ShareToLanScreen screen;
 	private final IShareToLanScreenParamAccessor stlParamAccessor;
 
-	private Supplier<Boolean> validateFields = null;
+	private Button startButton = null;
+	private boolean lastPortValidity = false;
+
+	private IntegerEditBox maxPlayerEditBox;
+	private Button savePreferenceButton;
+
 	private Consumer<Boolean> enableOkButton = null;
 
 	private Preferences preferences;
 	private boolean pvpAllowed;
 	private OnlineMode onlineMode;
-	private int port;
 	private int maxPlayer;
 
 	public OpenToLanScreenEx(ShareToLanScreen screen, IShareToLanScreenParamAccessor stlParamAccessor) {
@@ -59,12 +59,12 @@ public class OpenToLanScreenEx {
 			this.preferences = Preferences.read();
 
 			// Vanilla Configs
-			stlParamAccessor.setDefault(server.getForcedGameType(), server.getPlayerList().isAllowCheatsForAllPlayers());
+			stlParamAccessor.setDefault(server.getForcedGameType(), server.getPlayerList().isAllowCheatsForAllPlayers(),
+					server.getPort());
 
 			// LSP Configs
 			this.onlineMode = OnlineMode.of(server.usesAuthentication(), UUIDFixer.try_online_first);
 			this.pvpAllowed = server.isPvpAllowed();
-			this.port = server.getPort();
 			this.maxPlayer = server.getMaxPlayers();
 		} else {
 			readFromPreference(false);
@@ -78,12 +78,12 @@ public class OpenToLanScreenEx {
 		}
 
 		// Vanilla Configs
-		stlParamAccessor.setDefault(this.preferences.gameMode, this.preferences.allowCheat);
+		stlParamAccessor.setDefault(this.preferences.gameMode, this.preferences.allowCheat,
+				this.preferences.defaultPort);
 
 		// LSP Configs
 		this.onlineMode = OnlineMode.of(this.preferences.onlineMode, this.preferences.fixUUID);
 		this.pvpAllowed = this.preferences.allowPVP;
-		this.port = this.preferences.defaultPort;
 		this.maxPlayer = this.preferences.maxPlayer;
 	}
 
@@ -96,7 +96,7 @@ public class OpenToLanScreenEx {
 		this.preferences.onlineMode = this.onlineMode.onlineModeEnabled;
 		this.preferences.fixUUID = this.onlineMode.tryOnlineUUIDFirst;
 		this.preferences.allowPVP = this.pvpAllowed;
-		this.preferences.defaultPort = this.port;
+		this.preferences.defaultPort = this.stlParamAccessor.getPort();
 		this.preferences.maxPlayer = this.maxPlayer;
 	}
 
@@ -126,6 +126,10 @@ public class OpenToLanScreenEx {
 		return null;
 	}
 
+	private boolean areFieldsValid() {
+		return this.lastPortValidity && maxPlayerEditBox.isContentValid();
+	}
+
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Post
 	 */
@@ -136,60 +140,63 @@ public class OpenToLanScreenEx {
 			return;
 
 		final IntegratedServer server = mc.getSingleplayerServer();
-		final Button openToLanButton = findButton(list, "lanServer.start");
+		this.startButton = findButton(list, "lanServer.start");
 		if (server.isPublished()) {
 			// Remove the original button if the server is already published
-			if (openToLanButton != null) {
-				widgetRemover.accept(openToLanButton);
+			if (this.startButton != null) {
+				widgetRemover.accept(this.startButton);
 			}
 
-			final Button doneButton = new Button(this.screen.width / 2 - 155, this.screen.height - 28, 150, 20,
-				CommonComponents.GUI_DONE,
+			final Button doneButton = Button.builder(CommonComponents.GUI_DONE,
 				(btn) -> {
 					this.applyServerConfig(server, true);
 					Minecraft.getInstance().setScreen(stlParamAccessor.getLastScreen());
 				}
-			);
+			).bounds(this.screen.width / 2 - 155, this.screen.height - 28, 150, 20).build();
+
 			widgetAdder.accept(doneButton);
 			this.enableOkButton = (enabled) -> doneButton.active = enabled;
 		} else {
-			this.enableOkButton = (enabled) -> openToLanButton.active = enabled;
+			this.enableOkButton = (enabled) -> this.startButton.active = enabled;
+
+			// Move the port field
+			stlParamAccessor.movePortEditBox(this.screen.width / 2 - 154, this.screen.height - 54, 147, 20);
 		}
 
 		// Add our own widgets
 		// Load Preference Button
-		widgetAdder.accept(
-			new ImageButton(this.screen.width / 2 - 180, 16, 20, 20, 0, 0, 20,
-					new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
-					(btn) -> {
-						this.readFromPreference(true);
-						this.screen.init(mc, this.screen.width, this.screen.height);
-					},
-					(btn, poseStack, x, y) -> {
-						this.screen.renderTooltip(poseStack, textRenderer.split(preferenceLoadLabel, 200), x, y);
-					},
-					preferenceLoadLabel));
+		final ImageButton loadPrefButton = new ImageButton(this.screen.width / 2 - 180, 16, 20, 20, 0, 0, 20,
+				new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
+				(button) -> {
+					this.readFromPreference(true);
+					this.screen.init(mc, this.screen.width, this.screen.height);
+				}, preferenceLoadLabel);
+		loadPrefButton.setTooltip(Tooltip.create(preferenceLoadLabel));
+		widgetAdder.accept(loadPrefButton);
 
 		// Save Preference Button
-		final Button preferenceButton = new Button(this.screen.width / 2 - 155, 16, 150, 20, preferenceSaveLabel,
-				(btn) -> {
-					this.copyToPreference();
-					this.preferences.save();
-				});
-		widgetAdder.accept(preferenceButton);
+		this.savePreferenceButton = Button.builder(preferenceSaveLabel, (btn) -> {
+			this.copyToPreference();
+			this.preferences.save();
+		}).bounds(this.screen.width / 2 - 155, 16, 150, 20).build();
+
+		widgetAdder.accept(this.savePreferenceButton);
 
 		// Enable Preference Button
-		widgetAdder.accept(CycleButton
-				.onOffBuilder(this.preferences.enablePreference)
-				.withTooltip((curState) -> textRenderer.split(preferenceEnabledTooltip, 200))
+		widgetAdder.accept(CycleButton.onOffBuilder()
+				.withInitialValue(this.preferences.enablePreference)
+				.withTooltip((curState) -> Tooltip.create(preferenceEnabledTooltip))
 				.create(this.screen.width / 2 + 5, 16, 150, 20, preferenceEnabledLabel,
-						(dummyButton, newVal) -> this.preferences.enablePreference = newVal)
-			);
+					(cycleButton, newVal) -> {
+						this.preferences.enablePreference = newVal;
+					}
+				)
+		);
 
 		// Toggle button for onlineMode
 		widgetAdder.accept(new CycleButton.Builder<OnlineMode>((state) -> state.stateName)
 			.withValues(OnlineMode.values())
-			.withInitialValue(this.onlineMode).withTooltip((curState) -> textRenderer.split(curState.tooltip, 200))
+			.withInitialValue(this.onlineMode).withTooltip((curState) -> Tooltip.create(curState.tooltip))
 			.displayOnlyValue()
 			.create(this.screen.width / 2 - 155, 124, 150, 20, OnlineMode.translation,
 					(dummyButton, newVal) -> this.onlineMode = newVal)
@@ -202,34 +209,17 @@ public class OpenToLanScreenEx {
 					(dummyButton, newVal) -> this.pvpAllowed = newVal)
 		);
 
-		// Text field for port
-		final IntegerEditBox portEditBox = new IntegerEditBox(textRenderer, this.screen.width / 2 - 154, this.screen.height - 54, 147, 20,
-			portDescLabel, this.port, (ieb) -> {
-				boolean enableButtons = this.validateFields.get();
-				preferenceButton.active = enableButtons;
-				this.enableOkButton.accept(enableButtons);
-				if (ieb.isContentValid()) {
-					this.port = ieb.getValueAsInt();
-				}
-			}, portValidator, (ieb) -> server.isPublished() ? textRenderer.split(Component.literal(IPUtils.getIPs()), 250) : null);
-		widgetAdder.accept(portEditBox);
-		if (server.isPublished()) {
-			portEditBox.setEditable(false);
-		}
-
 		// Text field for maxPlayer
-		final IntegerEditBox portMaxPlayer = new IntegerEditBox(textRenderer, this.screen.width / 2 + 5, this.screen.height - 54, 147, 20,
+		this.maxPlayerEditBox = new IntegerEditBox(textRenderer, this.screen.width / 2 + 5, this.screen.height - 54, 147, 20,
 			maxPlayerDescLabel, this.maxPlayer, (ieb) -> {
-				boolean enableButtons = this.validateFields.get();
-				preferenceButton.active = enableButtons;
+				boolean enableButtons = this.areFieldsValid();
+				this.savePreferenceButton.active = enableButtons;
 				this.enableOkButton.accept(enableButtons);
 				if (ieb.isContentValid()) {
 					this.maxPlayer = ieb.getValueAsInt();
 				}
 			}, maxPlayerValidator, null);
-		widgetAdder.accept(portMaxPlayer);
-
-		this.validateFields = () ->	portEditBox.isContentValid() &&	portMaxPlayer.isContentValid();
+		widgetAdder.accept(this.maxPlayerEditBox);
 	}
 
 	/**
@@ -257,18 +247,33 @@ public class OpenToLanScreenEx {
 			Screen.drawString(matrixStack, textRenderer, maxPlayerDescLabel, gui.width / 2 + 5, gui.height - 66, 10526880);
 		}
 
-		Optional<GuiEventListener> mouserOverControl = gui.getChildAt(mouseX, mouseY);
-		if (mouserOverControl.isPresent() && mouserOverControl.get() instanceof TooltipAccessor) {
-			List<FormattedCharSequence> tooltips = ((TooltipAccessor)(mouserOverControl.get())).getTooltip();
-			gui.renderTooltip(matrixStack, tooltips, mouseX, mouseY);
-		}
+//		Optional<GuiEventListener> mouserOverControl = gui.getChildAt(mouseX, mouseY);
+//		if (mouserOverControl.isPresent() && mouserOverControl.get() instanceof TooltipAccessor) {
+//			List<FormattedCharSequence> tooltips = ((TooltipAccessor)(mouserOverControl.get())).getTooltip();
+//			gui.renderTooltip(matrixStack, tooltips, mouseX, mouseY);
+//		}
 	}
 
 	/**
 	 *  Mixin/ Coremod callback
 	 */
-	public int getServerPort() {
-		return this.port;
+	public void onPortEditBoxChanged() {
+		/**
+		 * This callback is only supposed to be called when the port changes.
+		 * The vanilla responder sets the state of the button just before entering this callback.
+		 * So we assume the state of the button represents the validity of port field.
+		 */
+		this.lastPortValidity = this.startButton.active;
+		boolean shouldEnableButtons = areFieldsValid();
+		this.startButton.active = shouldEnableButtons;
+		this.savePreferenceButton.active = shouldEnableButtons;
+	}
+
+	/**
+	 *  Mixin/ Coremod callback
+	 */
+	public int getDefaultPort() {
+		return this.preferences.defaultPort;
 	}
 
 	/**
