@@ -17,6 +17,7 @@ function initializeCoreMod() {
 
 	UUIDFixer = "rikka/lanserverproperties/UUIDFixer"
 
+	// methodName: use intermediate names where possible
 	return {
 		"ShareToLanScreen.<addFields>": {
 			"target": {
@@ -65,7 +66,7 @@ function initializeCoreMod() {
 			"target": {
 				"type": "METHOD",
 				"class": fullPath_ShareToLanScreen,
-				"methodName": "tryParsePort",
+				"methodName": "m_257854_",
 				"methodDesc": "(Ljava/lang/String;)Lnet/minecraft/network/chat/Component;"
 			},
 			"transformer": redirect_tryParsePort
@@ -74,7 +75,7 @@ function initializeCoreMod() {
 			"target": {
 				"type": "METHOD",
 				"class": fullPath_ShareToLanScreen,
-				"methodName": "render",
+				"methodName": "m_86412_",
 				"methodDesc": "(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V"
 			},
 			"transformer": bypass_render_PortText
@@ -83,7 +84,7 @@ function initializeCoreMod() {
 			"target": {
 				"type": "METHOD",
 				"class": "net/minecraft/core/UUIDUtil",
-				"methodName": "createOfflinePlayerUUID",
+				"methodName": "m_235879_",
 				"methodDesc": "(Ljava/lang/String;)Ljava/util/UUID;"
 			},
 			"transformer": detour_createOfflinePlayerUUID
@@ -164,8 +165,8 @@ function call_OpenToLanScreenEx_callback_on_Return(methodNode, func_name) {
 //	}
 function patch_startButton_OnClick(methodNode) {
 	var retCount = call_OpenToLanScreenEx_callback_on_Return(methodNode, "onOpenToLanClosed");
-	print("[LSP CoreMod] Found " + retCount + " RETURN instruction(s)");
 	print("[LSP CoreMod] Patched: ShareToLanScreen.startButton.OnClick$Lambda");
+	print("[LSP CoreMod] Found " + retCount + " RETURN instruction(s)");
 	return methodNode;
 }
 
@@ -176,8 +177,8 @@ function patch_startButton_OnClick(methodNode) {
 //	}
 function patch_portEditBox_OnChange(methodNode) {
 	var retCount = call_OpenToLanScreenEx_callback_on_Return(methodNode, "onPortEditBoxChanged");
-	print("[LSP CoreMod] Found " + retCount + " RETURN instruction(s)");
 	print("[LSP CoreMod] Patched: ShareToLanScreen.portEditBox.OnChange$Lambda");
+	print("[LSP CoreMod] Found " + retCount + " RETURN instruction(s)");
 	return methodNode;
 }
 

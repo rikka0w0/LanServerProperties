@@ -258,7 +258,7 @@ public class OpenToLanScreenEx {
 		widgetAdder.accept(alwaysOfflinesEditBox);
 
 		// Button to toggle visibility of the player list
-		final ImageButton showAOEButton = new ImageButton(this.screen.width / 2 - 180, 125, 20, 20, 0, 0, 20,
+		final ImageButton showAOEButton = new ImageButton(this.screen.width / 2 - 180, 124, 20, 20, 0, 0, 20,
 				new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
 				(button) -> {
 					alwaysOfflinesEditBox.visible ^= true;
@@ -279,7 +279,7 @@ public class OpenToLanScreenEx {
 			shareToLanButton.active = mc.hasSingleplayerServer();
 		}
 
-		if (mc.getSingleplayerServer().isPublished()) {
+		if (mc.hasSingleplayerServer() && mc.getSingleplayerServer().isPublished()) {
 			Button optionButton = findButton(list, "menu.options");
 
 			if (optionButton != null) {

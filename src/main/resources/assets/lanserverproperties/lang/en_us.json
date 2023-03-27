@@ -17,5 +17,5 @@
   "lanserverproperties.gui.port": "Port:",
   "lanserverproperties.gui.max_player": "Max Player:",
   "lanserverproperties.gui.always_offline": "Always Offline Players",
-  "lanserverproperties.gui.always_offline.message": "A list of space-separated player names that are always considered offline. Helpful in the 'Offline Mode + UUID Fix' mode to resolve the name collision between an offline player and a registered online player."
+  "lanserverproperties.gui.always_offline.message": "A list of space-separated player names that are always considered offline. Only valid in the 'Offline Mode + UUID Fix' mode and can be helpful to resolve the name collision between an offline player and a registered online player."
 }
