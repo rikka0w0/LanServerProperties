@@ -1,5 +1,7 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.19, Forge and Fabric.
+For Minecraft 1.12.2–1.19.4, Forge and Fabric.
+
+This branch is for 1.19.4, and hopefully it will work in future versions (although very unlikely).
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization.
@@ -35,6 +37,21 @@ cd LanServerProperties/fabric
 ./gradlew build
 ```
 
+To debug in Fabric, one may need to create `run/config/fabric_loader_dependencies.json` with the following content:
+```
+{
+  "version": 1,
+  "overrides": {
+    "lanserverproperties": {
+      "-depends": {
+        "minecraft": "IGNORED",
+        "fabricloader": "IGNORED"
+      }
+    }
+  }
+} 
+```
+
 ### Compile Forge artifact
 ```
 git clone https://github.com/rikka0w0/LanServerProperties.git
@@ -46,3 +63,4 @@ cd LanServerProperties/forge
 ```
 ./gradlew -Dorg.gradle.java.home=/path_to_jdk_directory <commands>
 ```
+
