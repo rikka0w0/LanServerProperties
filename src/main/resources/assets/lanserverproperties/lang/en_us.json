@@ -5,7 +5,7 @@
   "lanserverproperties.options.online_mode.off.vanilla": "Online Mode: OFF",
   "lanserverproperties.options.online_mode.off.vanilla.message": "Disabling online mode will allow anyone to join the LAN server.",
   "lanserverproperties.options.online_mode.off.fixed": "Offline Mode + UUID Fix",
-  "lanserverproperties.options.online_mode.off.fixed.message": "This mode will allow anyone to join the LAN server while retaining the UUID for those who logged in with their Microsoft/Mojang accounts. Use this mode if you are migrating from the online mode, it prevents loss of inventories.",
+  "lanserverproperties.options.online_mode.off.fixed.message": "This mode will allow anyone to join the LAN server while retaining the UUID for those who logged in with their Microsoft/Mojang accounts. Use this mode if you are migrating from the online mode and want to retain the inventories.",
   "lanserverproperties.options.preference_enabled": "Auto Load Preference",
   "lanserverproperties.options.preference_enabled.message": "Automatically load the settings from the stored preference, if the server is not published. Otherwise, this window displays the current configuration of the server.",
   "lanserverproperties.button.lan_server_options": "LAN Server Options",
@@ -15,5 +15,7 @@
   "lanserverproperties.gui.pvp_allowed": "PvP Allowed",
   "lanserverproperties.gui.port_listening": "Listening on:",
   "lanserverproperties.gui.port": "Port:",
-  "lanserverproperties.gui.max_player": "Max Player:"
+  "lanserverproperties.gui.max_player": "Max Player:",
+  "lanserverproperties.gui.always_offline": "Always Offline Players",
+  "lanserverproperties.gui.always_offline.message": "A list of space-separated player names that are always considered offline. Helpful in the 'Offline Mode + UUID Fix' mode to resolve the name collision between an offline player and a registered online player."
 }

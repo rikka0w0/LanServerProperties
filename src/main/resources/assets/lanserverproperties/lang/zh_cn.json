@@ -15,5 +15,6 @@
   "lanserverproperties.gui.pvp_allowed": "允许PvP",
   "lanserverproperties.gui.port_listening": "已开端口:",
   "lanserverproperties.gui.port": "监听端口:",
-  "lanserverproperties.gui.max_player": "最大玩家数:"
-}
+  "lanserverproperties.gui.max_player": "最大玩家数:",
+  "lanserverproperties.gui.always_offline": "强制离线模式的玩家名列表",
+  "lanserverproperties.gui.always_offline.message": "在本列表使用空格分隔. 当使用'离线模式+UUID修复模式'时, 若发生与已注册的正版版玩家名字冲突, 可将离线玩家名字加入这里."}

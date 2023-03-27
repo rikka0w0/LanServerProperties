@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -31,6 +32,8 @@ public class OpenToLanScreenEx {
 	private final static Component portDescLabel = Component.translatable("lanserverproperties.gui.port");
 	private final static Component portListeningLabel = Component.translatable("lanserverproperties.gui.port_listening");
 	private final static Component maxPlayerDescLabel = Component.translatable("lanserverproperties.gui.max_player");
+	private final static Component alwaysOfflineLabel = Component.translatable("lanserverproperties.gui.always_offline");
+	private final static Component alwaysOfflineDescLabel = Component.translatable("lanserverproperties.gui.always_offline.message");
 
 	private final static Function<String, Boolean> maxPlayerValidator = IntegerEditBox.makeValidator(0, 16);
 
@@ -48,6 +51,7 @@ public class OpenToLanScreenEx {
 	private boolean pvpAllowed;
 	private OnlineMode onlineMode;
 	private int maxPlayer;
+	private String playersAlwaysOffline;
 
 	public OpenToLanScreenEx(ShareToLanScreen screen, IShareToLanScreenParamAccessor stlParamAccessor) {
 		this.screen = screen;
@@ -63,9 +67,11 @@ public class OpenToLanScreenEx {
 					server.getPort());
 
 			// LSP Configs
-			this.onlineMode = OnlineMode.of(server.usesAuthentication(), UUIDFixer.try_online_first);
+			this.onlineMode = OnlineMode.of(server.usesAuthentication(), UUIDFixer.tryOnlineFirst);
 			this.pvpAllowed = server.isPvpAllowed();
 			this.maxPlayer = server.getMaxPlayers();
+
+			this.playersAlwaysOffline = Preferences.getAlwaysOfflineString(UUIDFixer.alwaysOfflinePlayers);
 		} else {
 			readFromPreference(false);
 		}
@@ -85,19 +91,23 @@ public class OpenToLanScreenEx {
 		this.onlineMode = OnlineMode.of(this.preferences.onlineMode, this.preferences.fixUUID);
 		this.pvpAllowed = this.preferences.allowPVP;
 		this.maxPlayer = this.preferences.maxPlayer;
+
+		this.playersAlwaysOffline = Preferences.getAlwaysOfflineString(this.preferences.playersAlwaysOffline);
 	}
 
 	private void copyToPreference() {
 		// Vanilla Configs
 		this.preferences.gameMode = this.stlParamAccessor.getGameType();
 		this.preferences.allowCheat = this.stlParamAccessor.isCommandEnabled();
+		this.preferences.defaultPort = this.stlParamAccessor.getPort();
 
 		// LSP Configs
 		this.preferences.onlineMode = this.onlineMode.onlineModeEnabled;
 		this.preferences.fixUUID = this.onlineMode.tryOnlineUUIDFirst;
 		this.preferences.allowPVP = this.pvpAllowed;
-		this.preferences.defaultPort = this.stlParamAccessor.getPort();
 		this.preferences.maxPlayer = this.maxPlayer;
+
+		this.preferences.playersAlwaysOffline = Preferences.listOfAlwaysOffline(this.playersAlwaysOffline);
 	}
 
 	private void applyServerConfig(IntegratedServer server, boolean setVanillaOptions) {
@@ -107,7 +117,8 @@ public class OpenToLanScreenEx {
 		}
 		server.setUsesAuthentication(this.onlineMode.onlineModeEnabled);
 		server.setPvpAllowed(this.pvpAllowed);
-		UUIDFixer.try_online_first = this.onlineMode.tryOnlineUUIDFirst;
+		UUIDFixer.tryOnlineFirst = this.onlineMode.tryOnlineUUIDFirst;
+		UUIDFixer.alwaysOfflinePlayers = Preferences.listOfAlwaysOffline(this.playersAlwaysOffline);
 		this.stlParamAccessor.setMaxPlayer(this.maxPlayer);
 	}
 
@@ -179,8 +190,9 @@ public class OpenToLanScreenEx {
 
 		// Add our own widgets
 		// Load Preference Button
-		final ImageButton loadPrefButton = new ImageButton(this.screen.width / 2 - 180, 16, 20, 20, 0, 0, 20,
-				new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
+		final ImageButton loadPrefButton = new ImageButton(this.screen.width / 2 - 180, 16, 12, 18,
+				0, 207, 18,
+				new ResourceLocation("textures/gui/recipe_book.png"), 256, 256,
 				(button) -> {
 					this.readFromPreference(true);
 					this.screen.init(mc, this.screen.width, this.screen.height);
@@ -232,6 +244,27 @@ public class OpenToLanScreenEx {
 				}
 			}, maxPlayerValidator, null);
 		widgetAdder.accept(this.maxPlayerEditBox);
+
+		// Text field for always offline players
+		final EditBox alwaysOfflinesEditBox = new EditBox(textRenderer, this.screen.width / 2 - 180, 146, 360, 20,
+				alwaysOfflineLabel);
+		alwaysOfflinesEditBox.setVisible(false);
+		alwaysOfflinesEditBox.setTooltip(Tooltip.create(alwaysOfflineDescLabel));
+		alwaysOfflinesEditBox.setMaxLength(1024);
+		alwaysOfflinesEditBox.setValue(this.playersAlwaysOffline);
+		alwaysOfflinesEditBox.setResponder((newValue) -> {
+			this.playersAlwaysOffline = newValue;
+		});
+		widgetAdder.accept(alwaysOfflinesEditBox);
+
+		// Button to toggle visibility of the player list
+		final ImageButton showAOEButton = new ImageButton(this.screen.width / 2 - 180, 125, 20, 20, 0, 0, 20,
+				new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
+				(button) -> {
+					alwaysOfflinesEditBox.visible ^= true;
+				}, alwaysOfflineLabel);
+		showAOEButton.setTooltip(Tooltip.create(alwaysOfflineLabel));
+		widgetAdder.accept(showAOEButton);
 	}
 
 	/**

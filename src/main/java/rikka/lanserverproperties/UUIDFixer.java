@@ -3,6 +3,9 @@ package rikka.lanserverproperties;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -14,14 +17,19 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 public class UUIDFixer {
-	public static boolean try_online_first = false;
+	public static boolean tryOnlineFirst = false;
+	public static List<String> alwaysOfflinePlayers = Collections.emptyList();
 
 	/**
 	 *  Mixin/ Coremod callback
 	 */
 	public static UUID hookEntry(String playerName) {
-		if (try_online_first)
+		if (alwaysOfflinePlayers.contains(playerName))
+			return null;
+
+		if (tryOnlineFirst)
 			return getOfficialUUID(playerName);
+
 		return null;
 	}
 

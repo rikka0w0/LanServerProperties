@@ -6,7 +6,10 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,17 +27,15 @@ public class Preferences {
 	// Vanilla Configs
 	public GameType gameMode = GameType.SURVIVAL;
 	public boolean allowCheat = false;
+	public int defaultPort = 25565;
 
 	// LSP Configs
 	public boolean onlineMode = true;
 	public boolean fixUUID = true;
 	public boolean allowPVP = true;
-	public int defaultPort = 25565;
 	public int maxPlayer = 8;
 
-	// TODO:
-	public boolean enableCustomUUIDMap = false;
-	public HashMap<String, String> customUUIDMap = new HashMap<>();
+	public List<String> playersAlwaysOffline = new LinkedList<>();
 
 	@SuppressWarnings("resource")
 	public static Path getConfigFolder() {
@@ -43,6 +44,29 @@ public class Preferences {
 
 	public static Path getFileName() {
 		return getConfigFolder().resolve(preferenceFileName);
+	}
+
+	public static String getAlwaysOfflineString(List<String> playerList) {
+		Iterator<String> iterator = playerList.iterator();
+
+		String result = "";
+		if (iterator.hasNext()) {
+			// The first element
+			result = iterator.next();
+		} else {
+			return result;
+		}
+
+		// Append remaining player names to the string
+		while (iterator.hasNext()) {
+			result += " " + iterator.next();
+		}
+
+		return result;
+	}
+
+	public static List<String> listOfAlwaysOffline(String alwaysOfflines) {
+		return Arrays.stream(alwaysOfflines.split(" ")).toList();
 	}
 
 	public boolean save() {
