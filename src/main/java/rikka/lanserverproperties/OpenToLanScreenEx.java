@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.GridWidget;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -280,15 +281,22 @@ public class OpenToLanScreenEx {
 		}
 
 		if (mc.hasSingleplayerServer() && mc.getSingleplayerServer().isPublished()) {
-			Button optionButton = findButton(list, "menu.options");
-
-			if (optionButton != null) {
-				ImageButton lanServerSettings = new ImageButton(gui.width / 2 - 124, optionButton.getY(), 20, 20, 0, 106, 20,
-						Button.WIDGETS_LOCATION, 256, 256, (button) -> mc.setScreen(new ShareToLanScreen(gui)),
-						lanServerOptionsLabel);
-				lanServerSettings.setTooltip(Tooltip.create(lanServerOptionsLabel));
-				widgetAdder.accept(lanServerSettings);
+			Button optionButton = null;
+			for (GuiEventListener children: list) {
+				if (children instanceof GridWidget gridWidget) {
+					optionButton = findButton(gridWidget.children(), "menu.options");
+					if (optionButton != null) {
+						break;
+					}
+				}
 			}
+
+			int y = optionButton == null ? 140 : optionButton.getY();
+			ImageButton lanServerSettings = new ImageButton(gui.width / 2 - 124, y, 20, 20, 0, 106, 20,
+					Button.WIDGETS_LOCATION, 256, 256, (button) -> mc.setScreen(new ShareToLanScreen(gui)),
+					lanServerOptionsLabel);
+			lanServerSettings.setTooltip(Tooltip.create(lanServerOptionsLabel));
+			widgetAdder.accept(lanServerSettings);
 		}
 	}
 

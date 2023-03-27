@@ -36,6 +36,6 @@ Enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 [[dependencies.lanserverproperties]]
     modId="minecraft"
     mandatory=true
-    versionRange="[@minecraft_version_min@,)"
+    versionRange="[@minecraft_version_min@,1.19.4)"
     ordering="NONE"
     side="CLIENT"
