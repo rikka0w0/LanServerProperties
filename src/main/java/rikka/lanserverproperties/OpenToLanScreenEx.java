@@ -22,6 +22,7 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 
 public class OpenToLanScreenEx {
+	private final static Component lanServerOptionsLabel = Component.translatable("lanserverproperties.button.lan_server_options");
 	private final static Component preferenceEnabledLabel = Component.translatable("lanserverproperties.options.preference_enabled");
 	private final static Component preferenceEnabledTooltip = Component.translatable("lanserverproperties.options.preference_enabled.message");
 	private final static Component preferenceLoadLabel = Component.translatable("lanserverproperties.button.preference_load");
@@ -243,11 +244,18 @@ public class OpenToLanScreenEx {
 
 		if (shareToLanButton != null) {
 			shareToLanButton.active = mc.hasSingleplayerServer();
-		} else if (mc.getSingleplayerServer().isPublished()) {
-			widgetAdder.accept(new ImageButton(gui.width / 2 - 180, 16, 20, 20, 0, 0, 20,
-					new ResourceLocation("textures/gui/accessibility.png"), 32, 64, (button) -> {
-						mc.setScreen(new ShareToLanScreen(gui));
-					}, preferenceLoadLabel));
+		}
+
+		if (mc.getSingleplayerServer().isPublished()) {
+			Button optionButton = findButton(list, "menu.options");
+
+			if (optionButton != null) {
+				ImageButton lanServerSettings = new ImageButton(gui.width / 2 - 124, optionButton.getY(), 20, 20, 0, 106, 20,
+						Button.WIDGETS_LOCATION, 256, 256, (button) -> mc.setScreen(new ShareToLanScreen(gui)),
+						lanServerOptionsLabel);
+				lanServerSettings.setTooltip(Tooltip.create(lanServerOptionsLabel));
+				widgetAdder.accept(lanServerSettings);
+			}
 		}
 	}
 

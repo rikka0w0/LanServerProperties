@@ -86,6 +86,8 @@ public class LanServerProperties {
 		public void setPortEditBoxReadonly(String value) {
 			gui.portEdit.setEditable(false);
 			gui.portEdit.setValue(value);
+			gui.portEdit.setTooltip(null);
+			gui.portEdit.setResponder(null);
 		}
 	}
 

@@ -8,6 +8,7 @@
   "lanserverproperties.options.online_mode.off.fixed.message": "此模式将允许任何人加入本服务器, 同时为使用微软/Mojang帐户登录的用户保留UUID. 如果您正在从在线模式迁移, 请使用此模式, 它可以防止背包和物品栏内容丢失.",
   "lanserverproperties.options.preference_enabled": "自动读取已存配置",
   "lanserverproperties.options.preference_enabled.message": "打开本窗口时自动读取已存配置,只在服务器未开放时生效,服务器开放后本页面默认显示当前服务器配置.",
+  "lanserverproperties.button.lan_server_options": "局域网服务器配置",
   "lanserverproperties.button.preference_load": "从已存配置读取",
   "lanserverproperties.button.preference_save": "保存配置",
 
