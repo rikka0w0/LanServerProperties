@@ -11,4 +11,5 @@ public interface IShareToLanScreenParamAccessor {
 	void setMaxPlayer(int num);
 	int getPort();
 	void movePortEditBox(int x, int y, int width, int height);
+	void setPortEditBoxReadonly(String value);
 }

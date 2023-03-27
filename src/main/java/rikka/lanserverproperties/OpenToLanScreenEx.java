@@ -39,10 +39,9 @@ public class OpenToLanScreenEx {
 	private Button startButton = null;
 	private boolean lastPortValidity = false;
 
+	private Button doneButton;
 	private IntegerEditBox maxPlayerEditBox;
 	private Button savePreferenceButton;
-
-	private Consumer<Boolean> enableOkButton = null;
 
 	private Preferences preferences;
 	private boolean pvpAllowed;
@@ -126,8 +125,21 @@ public class OpenToLanScreenEx {
 		return null;
 	}
 
-	private boolean areFieldsValid() {
-		return this.lastPortValidity && maxPlayerEditBox.isContentValid();
+	private void updateButtonStatus() {
+		boolean shouldEnableButtons = this.lastPortValidity && maxPlayerEditBox.isContentValid();
+
+		Minecraft mc = Minecraft.getInstance();
+		if (!mc.hasSingleplayerServer())
+			return;
+
+		final IntegratedServer server = mc.getSingleplayerServer();
+		if (server.isPublished()) {
+			this.doneButton.active = shouldEnableButtons;
+		} else {
+			this.startButton.active = shouldEnableButtons;
+		}
+
+		this.savePreferenceButton.active = shouldEnableButtons;
 	}
 
 	/**
@@ -147,21 +159,22 @@ public class OpenToLanScreenEx {
 				widgetRemover.accept(this.startButton);
 			}
 
-			final Button doneButton = Button.builder(CommonComponents.GUI_DONE,
+			this.doneButton = Button.builder(CommonComponents.GUI_DONE,
 				(btn) -> {
 					this.applyServerConfig(server, true);
 					Minecraft.getInstance().setScreen(stlParamAccessor.getLastScreen());
 				}
 			).bounds(this.screen.width / 2 - 155, this.screen.height - 28, 150, 20).build();
 
-			widgetAdder.accept(doneButton);
-			this.enableOkButton = (enabled) -> doneButton.active = enabled;
-		} else {
-			this.enableOkButton = (enabled) -> this.startButton.active = enabled;
+			widgetAdder.accept(this.doneButton);
 
-			// Move the port field
-			stlParamAccessor.movePortEditBox(this.screen.width / 2 - 154, this.screen.height - 54, 147, 20);
+			stlParamAccessor.setPortEditBoxReadonly("" + server.getPort());
+		} else {
+			this.doneButton = null;
 		}
+
+		// Move the port field
+		stlParamAccessor.movePortEditBox(this.screen.width / 2 - 154, this.screen.height - 54, 147, 20);
 
 		// Add our own widgets
 		// Load Preference Button
@@ -212,9 +225,7 @@ public class OpenToLanScreenEx {
 		// Text field for maxPlayer
 		this.maxPlayerEditBox = new IntegerEditBox(textRenderer, this.screen.width / 2 + 5, this.screen.height - 54, 147, 20,
 			maxPlayerDescLabel, this.maxPlayer, (ieb) -> {
-				boolean enableButtons = this.areFieldsValid();
-				this.savePreferenceButton.active = enableButtons;
-				this.enableOkButton.accept(enableButtons);
+				this.updateButtonStatus();
 				if (ieb.isContentValid()) {
 					this.maxPlayer = ieb.getValueAsInt();
 				}
@@ -225,10 +236,18 @@ public class OpenToLanScreenEx {
 	/**
 	 * Forge: GuiScreenEvent.InitGuiEvent.Post
 	 */
-	public static void initPauseScreen(Screen gui, List<? extends GuiEventListener> list) {
+	public static void initPauseScreen(Screen gui, List<? extends GuiEventListener> list,
+			Consumer<GuiEventListener> widgetAdder) {
+		final Minecraft mc = Minecraft.getInstance();
 		Button shareToLanButton = findButton(list, "menu.shareToLan");
+
 		if (shareToLanButton != null) {
-			shareToLanButton.active = Minecraft.getInstance().hasSingleplayerServer();
+			shareToLanButton.active = mc.hasSingleplayerServer();
+		} else if (mc.getSingleplayerServer().isPublished()) {
+			widgetAdder.accept(new ImageButton(gui.width / 2 - 180, 16, 20, 20, 0, 0, 20,
+					new ResourceLocation("textures/gui/accessibility.png"), 32, 64, (button) -> {
+						mc.setScreen(new ShareToLanScreen(gui));
+					}, preferenceLoadLabel));
 		}
 	}
 
@@ -246,12 +265,6 @@ public class OpenToLanScreenEx {
 			}
 			Screen.drawString(matrixStack, textRenderer, maxPlayerDescLabel, gui.width / 2 + 5, gui.height - 66, 10526880);
 		}
-
-//		Optional<GuiEventListener> mouserOverControl = gui.getChildAt(mouseX, mouseY);
-//		if (mouserOverControl.isPresent() && mouserOverControl.get() instanceof TooltipAccessor) {
-//			List<FormattedCharSequence> tooltips = ((TooltipAccessor)(mouserOverControl.get())).getTooltip();
-//			gui.renderTooltip(matrixStack, tooltips, mouseX, mouseY);
-//		}
 	}
 
 	/**
@@ -263,10 +276,12 @@ public class OpenToLanScreenEx {
 		 * The vanilla responder sets the state of the button just before entering this callback.
 		 * So we assume the state of the button represents the validity of port field.
 		 */
-		this.lastPortValidity = this.startButton.active;
-		boolean shouldEnableButtons = areFieldsValid();
-		this.startButton.active = shouldEnableButtons;
-		this.savePreferenceButton.active = shouldEnableButtons;
+		if (Minecraft.getInstance().getSingleplayerServer().isPublished()) {
+			this.lastPortValidity = true;
+		} else {
+			this.lastPortValidity = this.startButton.active;
+			this.updateButtonStatus();
+		}
 	}
 
 	/**

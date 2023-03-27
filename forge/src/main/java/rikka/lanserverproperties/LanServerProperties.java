@@ -81,6 +81,12 @@ public class LanServerProperties {
 			gui.portEdit.setWidth(width);
 			gui.portEdit.setHeight(height);
 		}
+
+		@Override
+		public void setPortEditBoxReadonly(String value) {
+			gui.portEdit.setEditable(false);
+			gui.portEdit.setValue(value);
+		}
 	}
 
 	private static class ClientHandler {
@@ -96,7 +102,7 @@ public class LanServerProperties {
 				// Made public by access transformer, f_96547_, Screen.font
 				hook.postInitShareToLanScreen(gui.font, event.getListenersList(), event::addListener, event::removeListener);
 			} else if (gui instanceof PauseScreen) {
-				OpenToLanScreenEx.initPauseScreen(gui, event.getListenersList());
+				OpenToLanScreenEx.initPauseScreen(gui, event.getListenersList(), event::addListener);
 			}
 		}
 

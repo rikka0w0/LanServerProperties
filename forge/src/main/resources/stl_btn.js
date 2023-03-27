@@ -79,14 +79,14 @@ function initializeCoreMod() {
 			},
 			"transformer": bypass_render_PortText
 		},
-		"Player.createPlayerUUID_String": {
+		"UUIDUtil.createOfflinePlayerUUID": {
 			"target": {
 				"type": "METHOD",
-				"class": "net.minecraft.world.entity.player.Player",
-				"methodName": "m_36283_",
+				"class": "net/minecraft/core/UUIDUtil",
+				"methodName": "createOfflinePlayerUUID",
 				"methodDesc": "(Ljava/lang/String;)Ljava/util/UUID;"
 			},
-			"transformer": patchMethod_Player_createPlayerUUID
+			"transformer": detour_createOfflinePlayerUUID
 		}
 	}
 }
@@ -256,13 +256,13 @@ function bypass_render_PortText(methodNode) {
 	return methodNode;
 }
 
-//	public static UUID createPlayerUUID(String playerName) {
+//	public static UUID createOfflinePlayerUUID(String playerName) {
 // +	UUID local_1 = UUIDFixer.hookEntry(playerName);
 // +	if (local_1 != null)
 // +		return local_1;
 //		return ....;
 //	}
-function patchMethod_Player_createPlayerUUID(methodNode) {
+function detour_createOfflinePlayerUUID(methodNode) {
 	var toInject = new InsnList();
 	var originalInstructionsLabel = new LabelNode();
 	toInject.add(new VarInsnNode(Opcodes.ALOAD, 0)); // playerName
@@ -275,7 +275,7 @@ function patchMethod_Player_createPlayerUUID(methodNode) {
 	toInject.add(originalInstructionsLabel);
 	methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), toInject);
 
-	print("[LSP CoreMod] Patched: Player.createPlayerUUID(String)");
+	print("[LSP CoreMod] Patched: UUIDUtil.createOfflinePlayerUUID(String)");
 
 	return methodNode;
 }
