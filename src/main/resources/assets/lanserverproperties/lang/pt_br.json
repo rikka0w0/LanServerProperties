@@ -1,0 +1,19 @@
+{
+    "lanserverproperties.options.online_mode": "Online Mode",
+    "lanserverproperties.options.online_mode.on": "Online Mode: ON",
+    "lanserverproperties.options.online_mode.on.message": "A ativação do Online Mode permitirá apenas que jogadores conectados com contas Microsoft/Mojang válidas entrem no servidor LAN.",
+    "lanserverproperties.options.online_mode.off.vanilla": "Online Mode: OFF",
+    "lanserverproperties.options.online_mode.off.vanilla.message": "Desativar o Online Mode permitirá que qualquer pessoa entre no servidor LAN.",
+    "lanserverproperties.options.online_mode.off.fixed": "Offline Mode + UUID Fix",
+    "lanserverproperties.options.online_mode.off.fixed.message": "Este modo permitirá que qualquer pessoa entre no servidor LAN, mantendo o UUID para aqueles que efetuaram login com suas contas Microsoft/Mojang. Use este modo se estiver migrando do Online Mode, evita perda do inventários.",
+    "lanserverproperties.options.preference_enabled": "Preferência de Carregamento Automático",
+    "lanserverproperties.options.preference_enabled.message": "Carregue automaticamente as configurações da preferência armazenada, se o servidor não estiver publicado. Caso contrário, esta janela exibe a configuração atual do servidor.",
+    "lanserverproperties.button.preference_load": "Carregar preferência",
+    "lanserverproperties.button.preference_save": "Salvar preferência",
+  
+    "lanserverproperties.gui.pvp_allowed": "PvP Permitido",
+    "lanserverproperties.gui.port_listening": "Ouvindo em:",
+    "lanserverproperties.gui.port": "Porta:",
+    "lanserverproperties.gui.max_player": "Jogador Máximo:"
+  }
+  
