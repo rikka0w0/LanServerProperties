@@ -1,0 +1,21 @@
+{
+  "lanserverproperties.options.online_mode": "Mode en ligne",
+  "lanserverproperties.options.online_mode.on": "Mode en ligne : Oui",
+  "lanserverproperties.options.online_mode.on.message": "Activer le mode en ligne permet uniquement aux joueurs connectés avec des comptes valides Microsoft/Mojang de rejoindre le serveur LAN.",
+  "lanserverproperties.options.online_mode.off.vanilla": "Mode en ligne : Non",
+  "lanserverproperties.options.online_mode.off.vanilla.message": "Désactiver le mode en ligne permet à tout le monde de rejoindre le serveur LAN.",
+  "lanserverproperties.options.online_mode.off.fixed": "Mode hors-ligne + Correction d'UUID",
+  "lanserverproperties.options.online_mode.off.fixed.message": "Ce mode permet à tout le monde de rejoindre le serveur LAN tout en conservant l'UUID pour ceux qui se sont connectés avec leur compte Microsoft/Mojang. Utilisez ce mode si vous migrez depuis le mode en ligne et que vous voulez conserver les inventaires.",
+  "lanserverproperties.options.preference_enabled": "Chargement automatique des préférences",
+  "lanserverproperties.options.preference_enabled.message": "Chargez automatiquement les paramètres depuis les préférences stockées si le serveur n'est pas publié. Sinon, cette fenêtre affiche la configuration actuelle du serveur.",
+  "lanserverproperties.button.lan_server_options": "Options du serveur LAN",
+  "lanserverproperties.button.preference_load": "Charger les préférences",
+  "lanserverproperties.button.preference_save": "Enregistrer les préférences",
+
+  "lanserverproperties.gui.pvp_allowed": "PvP autorisé",
+  "lanserverproperties.gui.port_listening": "En écoute sur :",
+  "lanserverproperties.gui.port": "Port :",
+  "lanserverproperties.gui.max_player": "Joueurs max :",
+  "lanserverproperties.gui.always_offline": "Joueurs toujours hors ligne",
+  "lanserverproperties.gui.always_offline.message": "Une liste de noms de joueurs séparés par des espaces qui sont toujours considérés comme hors ligne. Valide uniquement dans le mode 'Mode hors-ligne + Correction d'UUID' et peut être utile pour résoudre les conflits de noms entre un joueur hors ligne et un joueur en ligne enregistré."
+}
