@@ -1,7 +1,6 @@
 package rikka.lanserverproperties;
 
 import net.minecraft.client.server.IntegratedServer;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 
 public abstract class ConfigContainer {
@@ -40,7 +39,7 @@ public abstract class ConfigContainer {
 		server.setPvpAllowed(this.pvpAllowed);
 		UUIDFixer.tryOnlineFirst = this.onlineMode.tryOnlineUUIDFirst;
 		UUIDFixer.alwaysOfflinePlayers = Preferences.listOfAlwaysOffline(this.playersAlwaysOffline);
-		ConfigContainer.setMaxPlayers(server, this.maxPlayer);
+		LanServerProperties.setMaxPlayers(server, this.maxPlayer);
 	}
 
 	public void loadFromPreferences(boolean forceLoad) {
@@ -146,10 +145,5 @@ public abstract class ConfigContainer {
 		protected int getGuiPort() {
 			return this.stlParamAccessor.getPort();
 		}
-	}
-
-	public static void setMaxPlayers(IntegratedServer server, int num) {
-		PlayerList playerList = server.getPlayerList();
-		playerList.maxPlayers = num;
 	}
 }

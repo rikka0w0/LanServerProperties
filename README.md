@@ -1,7 +1,7 @@
 # LAN Server Properties
-For Minecraft 1.12.2–1.19.4, Forge and Fabric.
+For Minecraft 1.12.2–1.20.1, Forge and Fabric.
 
-This branch is for 1.19.4, and hopefully it will work in future versions (although very unlikely).
+This branch is for 1.20.1, and hopefully it will work in future versions (although very unlikely).
 
 When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" screen, which now also:
 * Allows for a port customization.
@@ -12,8 +12,9 @@ When this mod is installed, it enhances the vanilla Minecraft "Open to LAN" scre
 * Optionally allows the use of genuine UUID (From Microsoft/Mojang) in offline mode, this prevents the loss of inventory contents when switching from online mode to offline mode.
 
 ## Note
-* This mod is client-only, installing on a dedicated server will not affact anything.
+* This mod is client-only, installing on a dedicated server does nothing.
 * Only the Lan server owner need to install this mod.
+* Vanilla clients can join your server even if you install this mod, note that other mods you have may prevent vanilla clients from joining.
 * Installing this mod does not prevent you from joining other vanilla or mod servers.
 
 ## Dependencies

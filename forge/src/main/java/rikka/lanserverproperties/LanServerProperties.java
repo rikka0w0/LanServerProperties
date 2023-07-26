@@ -3,6 +3,8 @@ package rikka.lanserverproperties;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -122,5 +124,13 @@ public class LanServerProperties {
 	 */
 	private static OpenToLanScreenEx getLSPData(ShareToLanScreen screen) {
 		throw new RuntimeException("Coremod implementation failed!");
+	}
+
+	/**
+	 *  Called by the mod, should be consistent in all implementations.
+	 */
+	public static void setMaxPlayers(IntegratedServer server, int num) {
+		PlayerList playerList = server.getPlayerList();
+		playerList.maxPlayers = num;
 	}
 }

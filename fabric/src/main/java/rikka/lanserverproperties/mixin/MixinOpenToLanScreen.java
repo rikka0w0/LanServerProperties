@@ -13,10 +13,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -24,7 +22,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 
 import rikka.lanserverproperties.IShareToLanScreenParamAccessor;
@@ -92,9 +89,9 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 
 	@Redirect(method = "render",
 			slice = @Slice(from = @At(value = "FIELD", ordinal = 0, opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/client/gui/screens/ShareToLanScreen;PORT_INFO_TEXT:Lnet/minecraft/network/chat/Component;")),
-			at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screens/ShareToLanScreen.drawCenteredString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V")
+			at = @At(value = "INVOKE", target = "net/minecraft/client/gui/GuiGraphics.drawCenteredString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V")
 	)
-	private void bypass_render_PortText(PoseStack poseStack, Font font, Component component, int i, int j, int k) {
+	private void bypass_render_PortText(GuiGraphics guiGraphics, Font font, Component component, int i, int j, int k) {
 	}
 
 	@Inject(method = "init", at = @At("TAIL"))
@@ -103,8 +100,8 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	}
 
 	@Inject(method = "render", at = @At("TAIL"))
-	public void mimicForge_GuiPostRender(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		OpenToLanScreenEx.postDraw(this, this.font, matrixStack, mouseX, mouseY, partialTicks);
+	public void mimicForge_GuiPostRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+		OpenToLanScreenEx.postDraw(this, this.font, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -126,19 +123,6 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	}
 
 	@Override
-	public void setDefault(GameType gameType, boolean commandEnabled, int port) {
-		this.gameMode = gameType;
-		this.commands = commandEnabled;
-		this.port = port;
-	}
-
-	@Override
-	public void setMaxPlayer(int num) {
-		PlayerList playerList = Minecraft.getInstance().getSingleplayerServer().getPlayerList();
-		((PlayerListAccessor)playerList).setMaxPlayers(num);
-	}
-
-	@Override
 	public int getPort() {
 		return this.port;
 	}
@@ -151,10 +135,17 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 	}
 
 	@Override
-	public void setPortEditBoxReadonly(String value) {
-		this.portEdit.setEditable(false);
-		this.portEdit.setValue(value);
-		this.portEdit.setTooltip(null);
-		this.portEdit.setResponder(null);
+	public void setGameType(GameType gameType) {
+		this.gameMode = gameType;
+	}
+
+	@Override
+	public void setCommandEnabled(boolean commandEnabled) {
+		this.commands = commandEnabled;
+	}
+
+	@Override
+	public void setPort(int port) {
+		this.port = port;
 	}
 }
