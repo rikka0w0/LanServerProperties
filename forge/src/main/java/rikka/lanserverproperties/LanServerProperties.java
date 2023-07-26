@@ -1,10 +1,8 @@
 package rikka.lanserverproperties;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -58,16 +56,18 @@ public class LanServerProperties {
 		}
 
 		@Override
-		public void setDefault(GameType gameType, boolean commandEnabled, int port) {
+		public void setGameType(GameType gameType) {
 			gui.gameMode = gameType;
-			gui.commands = commandEnabled;
-			gui.port = port;
 		}
 
 		@Override
-		public void setMaxPlayer(int num) {
-			PlayerList playerList = Minecraft.getInstance().getSingleplayerServer().getPlayerList();
-			playerList.maxPlayers = num;
+		public void setCommandEnabled(boolean commandEnabled) {
+			gui.commands = commandEnabled;
+		}
+
+		@Override
+		public void setPort(int port) {
+			gui.port = port;
 		}
 
 		@Override
@@ -80,14 +80,6 @@ public class LanServerProperties {
 			gui.portEdit.setPosition(x, y);
 			gui.portEdit.setWidth(width);
 			gui.portEdit.setHeight(height);
-		}
-
-		@Override
-		public void setPortEditBoxReadonly(String value) {
-			gui.portEdit.setEditable(false);
-			gui.portEdit.setValue(value);
-			gui.portEdit.setTooltip(null);
-			gui.portEdit.setResponder(null);
 		}
 	}
 
@@ -113,7 +105,7 @@ public class LanServerProperties {
 			if (!(gui instanceof ShareToLanScreen))
 				return;
 
-			OpenToLanScreenEx.postDraw(gui, gui.font, event.getPoseStack(),
+			OpenToLanScreenEx.postDraw(gui, gui.font, event.getGuiGraphics(),
 					event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
 	}

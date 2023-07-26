@@ -48,7 +48,7 @@ function initializeCoreMod() {
 			"target": {
 				"type": "METHOD",
 				"class": fullPath_ShareToLanScreen,
-				"methodName": "m_257074_",
+				"methodName": "m_279789_",
 				"methodDesc": "(Lnet/minecraft/client/server/IntegratedServer;Lnet/minecraft/client/gui/components/Button;)V"
 			},
 			"transformer": patch_startButton_OnClick
@@ -75,8 +75,8 @@ function initializeCoreMod() {
 			"target": {
 				"type": "METHOD",
 				"class": fullPath_ShareToLanScreen,
-				"methodName": "m_86412_",
-				"methodDesc": "(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V"
+				"methodName": "m_88315_",
+				"methodDesc": "(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
 			},
 			"transformer": bypass_render_PortText
 		},
@@ -208,7 +208,7 @@ function redirect_tryParsePort(methodNode) {
 }
 
 function bypass_render_PortText(methodNode) {
-	print("[LSP CoreMod] Attempting to bypass drawCenteredString(p_96652_, this.font, PORT_INFO_TEXT, this.width / 2, 142, 16777215); in ShareToLanScreen::render.");
+	print("[LSP CoreMod] Attempting to bypass p_281738_.drawCenteredString(this.font, PORT_INFO_TEXT, this.width / 2, 142, 16777215); in ShareToLanScreen::render.");
 
 	var delete_begin = -1;
 
@@ -220,16 +220,16 @@ function bypass_render_PortText(methodNode) {
 			  && node.desc.equals("Lnet/minecraft/network/chat/Component;")) {
 				// We found GETSTATIC net/minecraft/client/gui/screens/ShareToLanScreen.f_257007_ Lnet/minecraft/network/chat/Component;
 
-				var ALOAD_PoseStack = methodNode.instructions.get(i - 3);
-				if (ALOAD_PoseStack.getOpcode() == Opcodes.ALOAD && ALOAD_PoseStack.var == 1) {
+				var ALOAD_GuiGraphics = methodNode.instructions.get(i - 3);
+				if (ALOAD_GuiGraphics.getOpcode() == Opcodes.ALOAD && ALOAD_GuiGraphics.var == 1) {
 					delete_begin = i - 3;
 				}
 			}
 		} else {
 			// We have found where to start deleting, looking for the end
-			if (node.getOpcode() == Opcodes.INVOKESTATIC
-			  && node.name.equals(ASMAPI.mapMethod("m_93215_"))
-			  && node.desc.equals("(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V")) {
+			if (node.getOpcode() == Opcodes.INVOKEVIRTUAL
+			  && node.name.equals(ASMAPI.mapMethod("m_280653_"))
+			  && node.desc.equals("(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V")) {
 				// Delete the entire function call
 				for (var it = methodNode.instructions.iterator(delete_begin); it.hasNext();) {
 					var instruction = it.next();

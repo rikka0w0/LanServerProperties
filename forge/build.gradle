@@ -1,12 +1,8 @@
-buildscript {
-	repositories {
-		// These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-		maven { url = 'https://maven.minecraftforge.net' }
-		mavenCentral()
-	}
-	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-	}
+plugins {
+	id 'eclipse'
+	id 'idea'
+	id 'maven-publish'
+	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
 // Load the common property
@@ -14,9 +10,8 @@ Properties props = new Properties();
 props.load(new FileInputStream("$project.rootDir/../fabric/gradle.properties"));
 props.each {prop -> project.ext.set(prop.key, prop.value)};
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
+project.ext.mod_id = project.archives_base_name;
+project.ext.minecraft_version_range = '[' + project.minecraft_version_min + ', ' + project.minecraft_version_max + ')';
 
 // Mojang ships Java 17 to end users in 1.18+
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -42,12 +37,17 @@ minecraft {
 	mappings channel: 'official', version: project.minecraft_version // defined in ../fabric/gradle.properties
 	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
+	// This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
+	// It is REQUIRED to be set to true for this template to function.
+	// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+	copyIdeResources = true
+
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
 	// Default run configurations.
 	// These can be tweaked, removed, or duplicated as needed.
 	runs {
-		client {
+		configureEach {
 			workingDirectory project.file('run')
 
 			// Recommended logging data for a userdev environment
@@ -57,10 +57,15 @@ minecraft {
 			property 'forge.logging.console.level', 'debug'
 
 			mods {
-				lanserverproperties {
+				"${mod_id}" {
 					source sourceSets.main
 				}
 			}
+		}
+
+		client {
+			// Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+			property 'forge.enabledGameTestNamespaces', mod_id
 		}
 	}
 }
@@ -72,16 +77,17 @@ sourceSets {
 		}
 		resources {
 			srcDir "../src/main/resources"
+			srcDir 'src/generated/resources'
 		}
 	}
 }
 
-jar.version = version
-jar.classifier = "forge"
-jar {
+tasks.named('jar', Jar).configure {
+	version version
+
 	manifest {
 		attributes([
-				"Specification-Title": "lanserverproperties",
+				"Specification-Title": mod_id,
 				"Specification-Vendor": "CISM",
 				"Specification-Version": "1", // We are version 1 of ourselves
 				"Implementation-Title": project.name,
@@ -90,17 +96,31 @@ jar {
 				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 		])
 	}
+
+	// This is the preferred method to reobfuscate your jar file
+	finalizedBy 'reobfJar'
+}
+// jar.classifier = "forge";
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.named('processResources', ProcessResources).configure {
+	var replaceProperties = [
+			minecraft_version_range: minecraft_version_range,
+			forge_version_range: forge_version_range,
+			loader_version_range: loader_version_range,
+			mod_id: mod_id,
+			mod_version: mod_version,
+	]
+	inputs.properties replaceProperties
+
+	filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+		expand replaceProperties + [project: project]
+	}
 }
 
-import org.apache.tools.ant.filters.ReplaceTokens
-// Process resources on build
-processResources {
-	filesMatching("**/META-INF/mods.toml") {
-		println "Substituting strings into mods.toml"
-		filter(ReplaceTokens, tokens: [
-			fml_version: project.fml_version,
-			forge_version: project.forge_version,
-			minecraft_version_min: props.minecraft_version_min
-		])
-	}
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
