@@ -1,0 +1,114 @@
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Archive Source Code
+      run: |
+        branch_name=$(git rev-parse --abbrev-ref HEAD)
+        git archive --format=zip --output source-code.zip "$branch_name"
+        git archive --format=tar.gz --output source-code.tar.gz "$branch_name"
+
+    - name: Get Info and Perform Substitutions
+      run: |
+        # Parse fabric/gradle.properties into key-value pairs
+        function parse_gradle_props() {
+          RETURNVAL=$(grep -v '^\s*#' $1 | sed -e 's/^[ \t]*//;s/[ \t]*$//' | sed -e 's/[ \t]*=[ \t]*/=/' | grep -E -v '^[^=]*\.[^=]*=')
+          echo "$RETURNVAL"
+        }
+        GRADLE_PROPS=$(parse_gradle_props fabric/gradle.properties)
+        GRADLE_PROPS+=$(parse_gradle_props forge/gradle.properties)
+
+        # Parse each line of the key-value pairs
+        VAR_NAMES=()
+        echo "Add the following to the environmental variables of this step:"
+        while IFS= read -r line; do
+          # Skip empty lines
+          [[ "$line" == "" ]] && continue
+
+          key=$(echo "$line" | cut -d= -f1)
+          value=$(echo "$line" | cut -d= -f2-)
+
+          VAR_NAMES+=("$key")
+          export "$key"="$value"
+          echo "$key"="$value"
+        done <<< "$GRADLE_PROPS"
+
+        # Generate dynamic strings based on the build configuration
+        function set_action_env() {
+          echo "$1"="$2" >> $GITHUB_ENV
+        }
+        set_action_env "GITHUB_RELEASE_TITLE" "${mod_version} for Minecraft Forge and Fabric ${minecraft_version}"
+        set_action_env "GITHUB_TAG_NAME" "${mod_version}_${minecraft_version}"
+        set_action_env "CURSEFORGE_FORGE" "${minecraft_version}-${mod_version}-forge"
+        set_action_env "CURSEFORGE_FABRIC" "${minecraft_version}-${mod_version}-fabric"
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Make Gradle Wrapper Executable
+      if: ${{ runner.os != 'Windows' }}
+      run: chmod +x ./forge/gradlew && chmod +x ./fabric/gradlew
+
+    - name: Build Forge
+      run: cd forge && ./gradlew clean build && cd ..
+
+    - name: Build Fabric
+      run: cd fabric && ./gradlew clean build && cd ..
+
+    - name: Publish to GitHub
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        name: ${{ env.GITHUB_RELEASE_TITLE }}
+        changelog-file: CHANGELOG
+
+        # Only include this section if you wish to publish your assets on GitHub.
+        github-tag: ${{ env.GITHUB_TAG_NAME }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-draft: true
+
+        files: |
+          forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          source-code.zip
+          source-code.tar.gz
+
+    - name: Publish to CurseForge (Fabric version)
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        changelog-file: CHANGELOG
+        # Only include this section if you wish to publish your assets on CurseForge.
+        curseforge-id: 387365
+        curseforge-token: "${{ secrets.CURSEFORGE_TOKEN }}"
+
+        name: ${{ env.CURSEFORGE_FABRIC }}
+        version-type: release
+        files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+
+    - name: Publish to CurseForge (Forge version)
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        changelog-file: CHANGELOG
+        # Only include this section if you wish to publish your assets on CurseForge.
+        curseforge-id: 387365
+        curseforge-token: "${{ secrets.CURSEFORGE_TOKEN }}"
+
+        name: ${{ env.CURSEFORGE_FORGE }}
+        version-type: beta
+        files: forge/build/libs/!(*-@(dev|sources|javadoc)).jar

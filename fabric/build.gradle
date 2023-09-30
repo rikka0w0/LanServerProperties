@@ -69,6 +69,10 @@ java {
 
 jar {
 	from "LICENSE"
+
+	manifest {
+		attributes('Implementation-Timestamp': new Date().toString())
+	}
 }
 
 // https://github.com/FabricMC/fabric-loom/issues/452
