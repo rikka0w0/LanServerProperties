@@ -81,7 +81,7 @@ jobs:
         # Only include this section if you wish to publish your assets on GitHub.
         github-tag: ${{ env.GITHUB_TAG_NAME }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-draft: true
+        github-draft: false
 
         files: |
           forge/build/libs/!(*-@(dev|sources|javadoc)).jar
