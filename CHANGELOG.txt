@@ -1,0 +1,2 @@
+Correct a Mixin target
+Add Github Actions for auto-publishing to Github and Curseforge
