@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.3-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -11,6 +11,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// javax.annotation.Nullable
+	modImplementation 'com.google.code.findbugs:jsr305:3.0.1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17

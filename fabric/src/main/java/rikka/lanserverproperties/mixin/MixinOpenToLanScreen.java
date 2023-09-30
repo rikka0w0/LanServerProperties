@@ -71,7 +71,7 @@ public abstract class MixinOpenToLanScreen extends Screen implements IShareToLan
 		this.lsp_objects = new OpenToLanScreenEx((ShareToLanScreen)(Object)this, (IShareToLanScreenParamAccessor)this);
 	}
 
-	@Inject(method = "method_19850", at = @At("TAIL"))
+	@Inject(method = "method_19851", at = @At("TAIL"))
 	private void patch_startButton_OnClick(CallbackInfo ci) {
 		this.lsp_objects.onOpenToLanClosed();
 	}
