@@ -76,7 +76,7 @@ jobs:
       uses: Kir-Antipov/mc-publish@v3.3
       with:
         name: ${{ env.GITHUB_RELEASE_TITLE }}
-        changelog-file: CHANGELOG
+        changelog-file: CHANGELOG.txt
 
         # Only include this section if you wish to publish your assets on GitHub.
         github-tag: ${{ env.GITHUB_TAG_NAME }}
