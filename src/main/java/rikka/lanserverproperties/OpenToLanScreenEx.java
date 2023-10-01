@@ -10,7 +10,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,6 +19,7 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
 
 public class OpenToLanScreenEx {
@@ -140,9 +141,12 @@ public class OpenToLanScreenEx {
 			Button optionButton = findWidget(list, Button.class, "menu.options");
 
 			if (optionButton != null) {
-				ImageButton lanServerSettings = new ImageButton(gui.width / 2 - 124, optionButton.getY(), 20, 20, 0, 106, 20,
-						Button.WIDGETS_LOCATION, 256, 256, (button) -> mc.setScreen(new ModifyLanScreen(gui)),
-						lanServerOptionsLabel);
+				SpriteIconButton lanServerSettings = SpriteIconButton
+					.builder(lanServerOptionsLabel, (button) -> mc.setScreen(new ModifyLanScreen(gui)), true)
+					.width(20)
+					.sprite(new ResourceLocation("icon/language"), 15, 15)
+					.build();
+				lanServerSettings.setPosition(gui.width / 2 - 124, optionButton.getY());
 				lanServerSettings.setTooltip(Tooltip.create(lanServerOptionsLabel));
 				widgetAdder.accept(lanServerSettings);
 			}

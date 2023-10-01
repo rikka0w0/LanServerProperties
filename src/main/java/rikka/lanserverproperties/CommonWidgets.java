@@ -9,7 +9,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -26,6 +28,9 @@ public abstract class CommonWidgets {
 	private final static Component alwaysOfflineDescLabel = Component.translatable("lanserverproperties.gui.always_offline.message");
 
 	private final static Function<String, Boolean> maxPlayerValidator = IntegerEditBox.makeValidator(0, 16);
+	private static final WidgetSprites PAGE_FORWARD_SPRITES = new WidgetSprites(
+			new ResourceLocation("recipe_book/page_forward"),
+			new ResourceLocation("recipe_book/page_forward_highlighted"));
 
 	private final Button savePreferenceButton;
 	private final CycleButton<Boolean> enablePreferenceOption;
@@ -96,19 +101,19 @@ public abstract class CommonWidgets {
 		widgetAdder.accept(this.alwaysOfflinesEditBox);
 
 		// Button to toggle visibility of the player list
-		final ImageButton showAOEButton = new ImageButton(screen.width / 2 - 180, 124, 20, 20, 0, 0, 20,
-				new ResourceLocation("textures/gui/accessibility.png"), 32, 64,
-				(button) -> {
-					alwaysOfflinesEditBox.visible ^= true;
-				}, alwaysOfflineLabel);
+		final SpriteIconButton showAOEButton = SpriteIconButton
+				.builder(alwaysOfflineLabel, (button) -> alwaysOfflinesEditBox.visible ^= true, true)
+				.width(20)
+				.sprite(new ResourceLocation("icon/accessibility"), 15, 15)
+				.build();
+		showAOEButton.setPosition(screen.width / 2 - 180, 124);
 		showAOEButton.setTooltip(Tooltip.create(alwaysOfflineLabel));
 		widgetAdder.accept(showAOEButton);
 
 		// Add our own widgets
 		// Load Preference Button
 		final ImageButton loadPrefButton = new ImageButton(screen.width / 2 - 180, 16, 12, 18,
-				0, 207, 18,
-				new ResourceLocation("textures/gui/recipe_book.png"), 256, 256,
+				PAGE_FORWARD_SPRITES,
 				(button) -> {
 					configContainer.loadFromPreferences(true);
 					syncWidgetValues();

@@ -96,16 +96,7 @@ public class ModifyLanScreen extends Screen {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
-		if (this.portEdit != null) {
-			this.portEdit.tick();
-		}
-	}
-
-	@Override
 	public void render(GuiGraphics guiGraphics, int p_96653_, int p_96654_, float p_96655_) {
-		this.renderBackground(guiGraphics);
 		guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 50, 16777215);
 		guiGraphics.drawCenteredString(this.font, INFO_TEXT, this.width / 2, 82, 16777215);
 		guiGraphics.drawString(this.font, portListeningLabel, this.width / 2 - 155, this.height - 66, 10526880);
