@@ -92,6 +92,8 @@ jobs:
         name: ${{ env.CURSEFORGE_FABRIC }}
         version-type: release
         files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+        java: Java 17
+        curseforge-dependencies: 306612@0.89.2+1.20.2(required)
 
     - name: Publish to CurseForge (Forge version)
       uses: Kir-Antipov/mc-publish@v3.3
@@ -104,3 +106,4 @@ jobs:
         name: ${{ env.CURSEFORGE_FORGE }}
         version-type: beta
         files: forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+        java: Java 17
