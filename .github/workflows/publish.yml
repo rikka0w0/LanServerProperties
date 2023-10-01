@@ -16,12 +16,6 @@ jobs:
       with:
         submodules: true
 
-    - name: Archive Source Code
-      run: |
-        branch_name=$(git rev-parse --abbrev-ref HEAD)
-        git archive --format=zip --output source-code.zip "$branch_name"
-        git archive --format=tar.gz --output source-code.tar.gz "$branch_name"
-
     - name: Get Info and Perform Substitutions
       run: |
         # Parse fabric/gradle.properties into key-value pairs
@@ -86,8 +80,6 @@ jobs:
         files: |
           forge/build/libs/!(*-@(dev|sources|javadoc)).jar
           fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-          source-code.zip
-          source-code.tar.gz
 
     - name: Publish to CurseForge (Fabric version)
       uses: Kir-Antipov/mc-publish@v3.3
