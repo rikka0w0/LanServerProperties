@@ -1,0 +1,21 @@
+{
+  "lanserverproperties.options.online_mode": "Проверка лицензии",
+  "lanserverproperties.options.online_mode.on": "С проверкой лицензии",
+  "lanserverproperties.options.online_mode.on.message": "Включение этой настройки разрешит подключение к локальному серверу только игрокам, вошедшим с действительными учётными записями Microsoft/Mojang.",
+  "lanserverproperties.options.online_mode.off.vanilla": "Без проверки лицензии",
+  "lanserverproperties.options.online_mode.off.vanilla.message": "Отключение этой настройки позволит любому пользователю подключиться к локальному серверу.",
+  "lanserverproperties.options.online_mode.off.fixed": "Без проверки лицензии + исправление UUID",
+  "lanserverproperties.options.online_mode.off.fixed.message": "Этот режим позволит любому пользователю подключиться к серверу локальной сети, сохранив UUID для тех, кто вошёл со своими учётными записями Microsoft/Mojang. Используйте этот режим, если вы переходите из режима с проверкой лицензии и хотите сохранить свой инвентарь, статистику и достижения.",
+  "lanserverproperties.options.preference_enabled": "Автоматически загружать настройки",
+  "lanserverproperties.options.preference_enabled.message": "Автоматически загружать настройки из сохранённых, если сервер ещё не опубликован. В противном случае в этом окне отображается текущая настройка локального сервера.",
+  "lanserverproperties.button.lan_server_options": "Параметры локального сервера",
+  "lanserverproperties.button.preference_load": "Загрузить настройки",
+  "lanserverproperties.button.preference_save": "Сохранить настройки",
+
+  "lanserverproperties.gui.pvp_allowed": "PvP разрешено",
+  "lanserverproperties.gui.port_listening": "Прослушивается на:",
+  "lanserverproperties.gui.port": "Порт:",
+  "lanserverproperties.gui.max_player": "Лимит игроков:",
+  "lanserverproperties.gui.always_offline": "Всегда нелицензированные игроки",
+  "lanserverproperties.gui.always_offline.message": "Список имён игроков, разделённых пробелами, которые всегда считаются оффлайновыми. Действителен только в режиме \"Без проверки лицензии + исправление UUID\" и может быть полезен для устранения конфликта имён между нелицензированным игроком и игроком с учётной записью Microsoft/Mojang."
+}
